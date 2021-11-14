@@ -137,7 +137,7 @@ def main():
       os.path.join("out", "very_troubled_chicken.gif"),
       save_all=True,
       append_images=imgs[1:],
-      duration=40,
+      duration=[1000] + ([40] * (len(imgs)-2)) + [1000],
       loop=0)
   return 0
 
