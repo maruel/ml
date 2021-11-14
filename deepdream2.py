@@ -56,7 +56,7 @@ class TiledGradients(tf.Module):
 
           # Extract a tile out of the image.
           img_tile = img_rolled[x:x+tile_size, y:y+tile_size]
-          loss = calc_loss(img_tile, self.model)
+          loss = deepdream.calc_loss(img_tile, self.model)
 
         # Update the image gradients for this tile.
         gradients = gradients + tape.gradient(loss, img_rolled)
@@ -70,11 +70,14 @@ class TiledGradients(tf.Module):
 
 def run_deep_dream_with_octaves(img, steps_per_octave=100, step_size=0.01, 
                                 octaves=range(-2,3), octave_scale=1.3):
+  """Returns images."""
+  get_tiled_gradients = TiledGradients(deepdream.dream_model())
   base_shape = tf.shape(img)
   img = tf.keras.preprocessing.image.img_to_array(img)
   img = tf.keras.applications.inception_v3.preprocess_input(img)
   initial_shape = img.shape[:-1]
   img = tf.image.resize(img, initial_shape)
+  out = []
   for octave in octaves:
     # Scale the image based on the octave.
     new_size = tf.cast(tf.convert_to_tensor(base_shape[:-1]), tf.float32)*(octave_scale**octave)
@@ -84,9 +87,9 @@ def run_deep_dream_with_octaves(img, steps_per_octave=100, step_size=0.01,
       img = img + gradients*step_size
       img = tf.clip_by_value(img, -1, 1)
       if step % 10 == 0:
-        show(deprocess(img))
+        out.append(img)
         print ("Octave {}, Step {}".format(octave, step))
-  return deprocess(img)
+  return out
 
 
 def main():
@@ -97,34 +100,38 @@ def main():
   # 'https://pbs.twimg.com/profile_images/80041186/chicken.gif'
   original_img = deepdream.download("chicken.gif")
 
-  # TODO(maruel): Broken, will fix later.
+  # TODO(maruel): Doesn't crash but the image generated isn't correct.
 
   OCTAVE_SCALE = 1.30
 
+  # TODO(maruel): Is this making a copy of the image?
   img = tf.constant(np.array(original_img))
   base_shape = tf.shape(img)[:-1]
   float_base_shape = tf.cast(base_shape, tf.float32)
   for n in range(-2, 3):
     new_shape = tf.cast(float_base_shape*(OCTAVE_SCALE**n), tf.int32)
     img = tf.image.resize(img, new_shape).numpy()
-    img = deepdream.run_deep_dream_simple(img=img, steps=50, step_size=0.01)
+    imgs = deepdream.run_deep_dream_simple(img=img, steps=50, step_size=0.01)
+    # Discard all but the last image.
+    img = imgs[-1]
   img = tf.image.resize(img, base_shape)
   img = tf.image.convert_image_dtype(img/255.0, dtype=tf.uint8)
-  deepdream.save(img)
+  #deepdream.save(img)
 
+  # TODO(maruel): Is this making a copy of the image?
   shift, img_rolled = random_roll(np.array(original_img), 512)
-  deepdream.save(img_rolled)
+  #deepdream.save(img_rolled)
 
-  get_tiled_gradients = TiledGradients(dream_model)
-
-  img = run_deep_dream_with_octaves(img=original_img, step_size=0.01)
-  img = tf.image.resize(img, base_shape)
-  img = tf.image.convert_image_dtype(img/255.0, dtype=tf.uint8)
-  show(img)
+  imgs = run_deep_dream_with_octaves(img=original_img, step_size=0.01)
+  for i in range(len(imgs)):
+    imgs[i] = tf.image.resize(imgs[i], base_shape)
+    imgs[i] = tf.image.convert_image_dtype(imgs[i]/255.0, dtype=tf.uint8)
+    #deepdream.save(imgs[i])
 
   imgs = [
-      deepdream.PIL.Image.fromarray(deepdream.np.array(deepdream.denormalize(img)))
-      for img in dreams
+      #deepdream.PIL.Image.fromarray(deepdream.np.array(deepdream.denormalize(img)))
+      deepdream.PIL.Image.fromarray(deepdream.np.array(img))
+      for img in imgs
   ]
   imgs[0].save(
       os.path.join("out", "very_troubled_chicken.gif"),

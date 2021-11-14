@@ -29,6 +29,7 @@ import PIL.Image
 
 _SAVE_INDEX = 0
 _DEEP_DREAM = None
+_DREAM_MODEL = None
 # TODO(maruel): It'd be fun to make it work in float16 (on Nvidia) or bfloat16
 # (Cloud TPU).
 _TYPE = tf.float32
@@ -42,7 +43,7 @@ def download(url, max_dim=None):
     if img.mode == "P":
       img = img.convert("RGBA")
     background = PIL.Image.new("RGB", img.size, (255, 255, 255))
-    background.paste(img, mask=img.split()[3]) 
+    background.paste(img, mask=img.split()[3])
     img = background.convert("RGB")
   if max_dim:
     img.thumbnail((max_dim, max_dim))
@@ -59,6 +60,8 @@ def save(img):
   """Saves an image represented as a normalized uint8 ft.tensor."""
   global _SAVE_INDEX
   _SAVE_INDEX = _SAVE_INDEX + 1
+  if not os.path.isdir('out'):
+    os.mkdir('out')
   p = os.path.join('out', '%03d.png' % _SAVE_INDEX)
   if os.path.isfile(p):
     os.remove(p)
@@ -102,7 +105,7 @@ class DeepDream(tf.Module):
         # input image.
         gradients = tape.gradient(loss, img)
         # Normalize the gradients.
-        gradients /= tf.math.reduce_std(gradients) + 1e-8 
+        gradients /= tf.math.reduce_std(gradients) + 1e-8
         # In gradient ascent, the "loss" is maximized so that the input image
         # increasingly "excites" the layers. You can update the image by
         # directly adding the gradients (because they're the same shape!)
@@ -113,6 +116,19 @@ class DeepDream(tf.Module):
       return loss, img
 
 
+def dream_model():
+  """Lazy create the deep dream model."""
+  global _DREAM_MODEL
+  if not _DREAM_MODEL:
+    # Deepdream model.
+    _base_model = tf.keras.applications.InceptionV3(include_top=False, weights='imagenet')
+    # Maximize the activations of these layers.
+    _layers = [_base_model.get_layer(name).output for name in ['mixed3', 'mixed5']]
+    # Create the feature extraction model.
+    _DREAM_MODEL = tf.keras.Model(inputs=_base_model.input, outputs=_layers)
+  return _DREAM_MODEL
+
+
 def deepdream(*args, **kwargs):
   """Runs deep dream on an image.
 
@@ -120,12 +136,7 @@ def deepdream(*args, **kwargs):
   """
   global _DEEP_DREAM
   if not _DEEP_DREAM:
-    # Deepdream model.
-    _base_model = tf.keras.applications.InceptionV3(include_top=False, weights='imagenet')
-    # Maximize the activations of these layers.
-    _layers = [_base_model.get_layer(name).output for name in ['mixed3', 'mixed5']]
-    # Create the feature extraction model.
-    _DEEP_DREAM = DeepDream(tf.keras.Model(inputs=_base_model.input, outputs=_layers))
+    _DEEP_DREAM = DeepDream(dream_model())
   return _DEEP_DREAM(*args, **kwargs)
 
 
