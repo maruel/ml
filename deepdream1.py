@@ -22,11 +22,14 @@ def main():
       format="%(relativeCreated)6d %(message)s")
   logging.info('Loaded')
   # 'https://pbs.twimg.com/profile_images/80041186/chicken.gif'
-  dreams = deepdream.run_deep_dream_simple(
-      img=deepdream.download("chicken.gif"),
-      steps=1000,
-      step_size=0.01,
-      steps_per_output=10)
+  try:
+    dreams = deepdream.run_deep_dream_simple(
+        img=deepdream.download("chicken.gif"),
+        steps=1000,
+        step_size=0.01,
+        steps_per_output=10)
+  except KeyboardInterrupt:
+    return 1
 
   imgs = [
       deepdream.PIL.Image.fromarray(deepdream.np.array(deepdream.denormalize(img)))

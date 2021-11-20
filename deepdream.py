@@ -9,6 +9,7 @@ Inspired by https://www.tensorflow.org/tutorials/generative/deepdream
 
 import logging
 import os
+import urllib.parse
 
 # Tell tensorflow to shut up.
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'  # Between '0' and '3'
@@ -30,14 +31,16 @@ import PIL.Image
 _SAVE_INDEX = 0
 _DEEP_DREAM = None
 _DREAM_MODEL = None
-# TODO(maruel): It'd be fun to make it work in float16 (on Nvidia) or bfloat16
-# (Cloud TPU).
+# TODO(maruel): It'd be fun to make it work in float16 (Nvidia RTX 20x0) or
+# bfloat16 (Cloud TPU or Nvidia RTX 30x0).
 _TYPE = tf.float32
 
 
 def download(url, max_dim=None):
   """Opens an images and returns it as a np.array with [0, 255] range."""
-  img = PIL.Image.open(tf.keras.utils.get_file(url.split('/')[-1], origin=url))
+  if urllib.parse.urlparse(url).scheme:
+    url = tf.keras.utils.get_file(url.split('/')[-1], origin=url)
+  img = PIL.Image.open(url)
 	# Convert indexed (gif) or RGBA (png) into RGA with a white background.
   if img.mode != "RGB":
     if img.mode == "P":
@@ -76,11 +79,12 @@ def calc_loss(img, model):
 
   Returns tf.float32.
   """
-  # TODO(maruel): Have the images as float32 or float16?
   layer_activations = model(tf.expand_dims(img, axis=0))
   if len(layer_activations) == 1:
     layer_activations = [layer_activations]
-  return tf.math.reduce_sum([tf.math.reduce_mean(act) for act in layer_activations])
+  # Sum of the medians for each layers.
+  medians = [tf.math.reduce_mean(tf.cast(act, _TYPE)) for act in layer_activations]
+  return tf.math.reduce_sum(medians)
 
 
 class DeepDream(tf.Module):
@@ -94,7 +98,7 @@ class DeepDream(tf.Module):
         tf.TensorSpec(shape=[], dtype=_TYPE),)
   )
   def __call__(self, img, steps, step_size):
-      loss = tf.constant(0.0, dtype=tf.float32)
+      loss = tf.constant(0.0, dtype=_TYPE)
       for n in tf.range(steps):
         with tf.GradientTape() as tape:
           # This needs gradients relative to `img`
@@ -111,7 +115,6 @@ class DeepDream(tf.Module):
         # directly adding the gradients (because they're the same shape!)
         p = gradients*step_size
         img = img + p
-        # TODO(maruel): Unnecessary for float16?
         img = tf.clip_by_value(img, -1, 1)
       return loss, img
 

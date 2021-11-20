@@ -8,8 +8,8 @@ set -eu
 # sudo apt install gcc
 
 if ! lspci | grep -i nvidia > /dev/null; then
-  echo "No nvidia card found"
-  exit 1
+  echo "Warning: No nvidia card found"
+  # Continue on, it still runs at a bearable speed on CPU.
 fi
 
 if [ ! -f bin/activate ]; then
