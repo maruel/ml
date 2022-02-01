@@ -6,7 +6,8 @@
 set -eu
 cd "$(dirname $0)"
 
-# sudo apt install gcc
+# I think gcc is required but not sure. I had it preinstalled for other reasons.
+# If you face challenges, install with: sudo apt install gcc
 
 HAS_NVIDIA=1
 if ! lspci | grep -i nvidia > /dev/null; then
@@ -22,7 +23,6 @@ fi
 
 source bin/activate
 pip3 install -q -r requirements.txt
-# ipython3 profile create
 
 if [ "$HAS_NVIDIA" == "1" ]; then
   if [ ! -d /usr/local/cuda/lib64/ ]; then
