@@ -1,8 +1,10 @@
-# Deeplearning toolkit
+# Machine Learning toolkit
 
-Includes examples in [notebooks/learning](notebooks/learning).
+Includes examples in [notebooks/learning](notebooks/learning)
 
-Includes deepdream notebooks and scripts. Deepdream was really hot in 2017.
+Includes deepdream notebooks and scripts.
+[DeepDream](https://en.wikipedia.org/wiki/DeepDream) was really hot a few years
+back.
 
 To get started, run `./setup.sh`
 

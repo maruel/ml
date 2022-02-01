@@ -8,9 +8,11 @@ cd "$(dirname $0)"
 
 # sudo apt install gcc
 
+HAS_NVIDIA=1
 if ! lspci | grep -i nvidia > /dev/null; then
   echo "Warning: No nvidia card found"
   # Continue on, it still runs at a bearable speed on CPU.
+  HAS_NVIDIA=0
 fi
 
 if [ ! -f bin/activate ]; then
@@ -22,12 +24,16 @@ source bin/activate
 pip3 install -q -r requirements.txt
 # ipython3 profile create
 
-if [ ! -d /usr/local/cuda/lib64/ ]; then
-  echo "Visit https://gist.github.com/maruel/e99622298891cc856044e8c158a83fdd"
-  exit 1
-fi
+if [ "$HAS_NVIDIA" == "1" ]; then
+  if [ ! -d /usr/local/cuda/lib64/ ]; then
+    echo "CUDA is not properly installed."
+    echo "Visit https://gist.github.com/maruel/e99622298891cc856044e8c158a83fdd"
+    exit 1
+  fi
 
-if [ ! -f /usr/lib/x86_64-linux-gnu/libcudnn.so ]; then
-  echo "Visit https://gist.github.com/maruel/e99622298891cc856044e8c158a83fdd"
-  exit 1
+  if [ ! -f /usr/lib/x86_64-linux-gnu/libcudnn.so ]; then
+    echo "cuDNN is not properly installed."
+    echo "Visit https://gist.github.com/maruel/e99622298891cc856044e8c158a83fdd"
+    exit 1
+  fi
 fi
