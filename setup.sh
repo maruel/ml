@@ -4,6 +4,7 @@
 # that can be found in the LICENSE file.
 
 set -eu
+cd "$(dirname $0)"
 
 # sudo apt install gcc
 
@@ -18,12 +19,8 @@ if [ ! -f bin/activate ]; then
 fi
 
 source bin/activate
-
-# From:
-#   pip install tensorflow Pillow
-#   pip freeze > requirements.txt
-pip install -q -r requirements.txt
-
+pip3 install -q -r requirements.txt
+# ipython3 profile create
 
 if [ ! -d /usr/local/cuda/lib64/ ]; then
   echo "Visit https://gist.github.com/maruel/e99622298891cc856044e8c158a83fdd"

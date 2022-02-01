@@ -1,6 +1,7 @@
 /bin
+/etc
 /lib
 /lib64
-/out
+/notebooks/**/.ipynb_checkpoints
 /pyvenv.cfg
 /share
