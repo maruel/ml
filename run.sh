@@ -7,6 +7,7 @@ set -eu
 cd "$(dirname $0)"
 
 source bin/activate
+export TF_CPP_MIN_LOG_LEVEL=2
 # --watch ?
 # --autoreload ?
 jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir notebooks
