@@ -31,9 +31,6 @@ import PIL.Image
 _SAVE_INDEX = 0
 _DEEP_DREAM = None
 _DREAM_MODEL = None
-# TODO(maruel): It'd be fun to make it work in float16 (Nvidia RTX 20x0) or
-# bfloat16 (Cloud TPU or Nvidia RTX 30x0).
-_TYPE = tf.float32
 
 
 def download(url, max_dim=None):
@@ -83,7 +80,7 @@ def calc_loss(img, model):
   if len(layer_activations) == 1:
     layer_activations = [layer_activations]
   # Sum of the medians for each layers.
-  medians = [tf.math.reduce_mean(tf.cast(act, _TYPE)) for act in layer_activations]
+  medians = [tf.math.reduce_mean(tf.cast(act, tf.float32)) for act in layer_activations]
   return tf.math.reduce_sum(medians)
 
 
@@ -93,12 +90,12 @@ class DeepDream(tf.Module):
 
   @tf.function(
       input_signature=(
-        tf.TensorSpec(shape=[None,None,3], dtype=_TYPE),
+        tf.TensorSpec(shape=[None,None,3], dtype=tf.float32),
         tf.TensorSpec(shape=[], dtype=tf.int32),
-        tf.TensorSpec(shape=[], dtype=_TYPE),)
+        tf.TensorSpec(shape=[], dtype=tf.float32),)
   )
   def __call__(self, img, steps, step_size):
-      loss = tf.constant(0.0, dtype=_TYPE)
+      loss = tf.constant(0.0, dtype=tf.float32)
       for n in tf.range(steps):
         with tf.GradientTape() as tape:
           # This needs gradients relative to `img`
@@ -158,8 +155,8 @@ def run_deep_dream_simple(img, steps, step_size, steps_per_output=100):
   # https://www.tensorflow.org/api_docs/python/tf/keras/applications/inception_v3/preprocess_input
   img = tf.keras.applications.inception_v3.preprocess_input(img)
   # https://www.tensorflow.org/api_docs/python/tf/convert_to_tensor
-  img = tf.convert_to_tensor(img, dtype=_TYPE)
-  step_size = tf.constant(step_size, dtype=_TYPE)
+  img = tf.convert_to_tensor(img, dtype=tf.float32)
+  step_size = tf.constant(step_size, dtype=tf.float32)
   steps_remaining = steps
   step = 0
   run_steps = tf.constant(steps_per_output)
