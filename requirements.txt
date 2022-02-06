@@ -32,6 +32,7 @@ google-auth==2.3.3
 google-auth-oauthlib==0.4.6
 google-pasta==0.2.0
 grpcio==1.41.1
+gviz-api==1.10.0
 h5py==3.5.0
 idna==3.3
 importlib-resources==5.4.0
@@ -50,7 +51,7 @@ jupyter-console==6.4.0
 jupyter-core==4.9.1
 jupyter-server==1.13.4
 jupyter-server-proxy==3.2.1
-jupyterlab==3.2.8
+jupyterlab==3.2.9
 jupyterlab-nvdashboard==0.6.0
 jupyterlab-pygments==0.1.2
 jupyterlab-server==2.10.3
@@ -112,6 +113,7 @@ sniffio==1.2.0
 stack-data==0.1.4
 tensorboard==2.8.0
 tensorboard-data-server==0.6.1
+tensorboard-plugin-profile==2.5.0
 tensorboard-plugin-wit==1.8.0
 tensorflow==2.8.0
 tensorflow-estimator==2.7.0

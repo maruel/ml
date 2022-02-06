@@ -7,8 +7,11 @@ set -eu
 
 source bin/activate
 pip3 install --upgrade \
+  Pillow \
   ipympl \
   jupyter jupyterlab \
   jupyterlab-nvdashboard \
-  matplotlib Pillow tensorflow
+  matplotlib \
+  tensorboard_plugin_profile \
+  tensorflow
 pip3 freeze > requirements.txt
