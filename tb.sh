@@ -4,15 +4,8 @@
 # that can be found in the LICENSE file.
 
 set -eu
+cd "$(dirname $0)"
 
 source bin/activate
-pip3 install --upgrade \
-  Pillow \
-  ipympl \
-  jupyter jupyterlab \
-  jupyterlab-nvdashboard \
-  kaggle \
-  matplotlib \
-  tensorboard_plugin_profile \
-  tensorflow
-pip3 freeze > requirements.txt
+
+tensorboard serve --logdir notebooks/logdir/ --bind_all --port 6006
