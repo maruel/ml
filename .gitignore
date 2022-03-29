@@ -3,6 +3,7 @@
 /etc
 /lib
 /lib64
+/notebooks/kaggle
 /notebooks/logdir
 /notebooks/**/.ipynb_checkpoints
 /pyvenv.cfg
