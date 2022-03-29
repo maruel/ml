@@ -49,7 +49,7 @@ jupyter==1.0.0
 jupyter-client==7.1.2
 jupyter-console==6.4.0
 jupyter-core==4.9.1
-jupyter-server==1.13.4
+jupyter-server==1.15.4
 jupyter-server-proxy==3.2.1
 jupyterlab==3.2.9
 jupyterlab-nvdashboard==0.6.0
