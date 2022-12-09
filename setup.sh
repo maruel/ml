@@ -18,10 +18,14 @@ fi
 
 if [ ! -f bin/activate ]; then
   echo "Setting up virtualenv"
-  python3 -m venv .
+  #python3 -m venv .
+  virtualenv .
 fi
 
 source bin/activate
+
+# sudo apt install build-essential libssl-dev python3-dev
+
 pip3 install -q -r requirements.txt
 
 if [ "$HAS_NVIDIA" == "1" ]; then
