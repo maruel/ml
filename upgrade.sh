@@ -11,7 +11,6 @@ pip3 install --upgrade \
   accelerate \
   diffusers \
   ftfy \
-  gradio \
   ipympl \
   jupyter jupyterlab \
   jupyterlab-nvdashboard \
@@ -23,15 +22,12 @@ pip3 install --upgrade \
   transformers \
   triton
 
-# https://colab.research.google.com/github/qunash/stable-diffusion-2-gui/blob/main/stable_diffusion_2_0.ipynb#scrollTo=78HoqRAB-cES
-# diffusers is extremely active but is released often. Alternative:
-#   pip install --upgrade git+https://github.com/huggingface/diffusers.git@main
-# transformers is also very active.
-#   pip install --upgrade git+https://github.com/huggingface/transformers/
-#   pip install https://github.com/metrolobo/xformers_wheels/releases/download/1d31a3ac_various_6/xformers-0.0.14.dev0-cp37-cp37m-linux_x86_64.whl
+# Told this help performances, but no official release since September?
+#   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
 #   pip install xformers
 
 # Note that gradio seems not great, it creates http server and contacts an
 # external web site. Better to not use it.
+# pip3 install --upgrade gradio
 
 pip3 freeze > requirements.txt
