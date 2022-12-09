@@ -25,7 +25,7 @@ fi
 source bin/activate
 
 # sudo apt install build-essential libssl-dev python3-dev
-
+# ./upgrade.sh ?
 pip3 install -q -r requirements.txt
 
 if [ "$HAS_NVIDIA" == "1" ]; then
