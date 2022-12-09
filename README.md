@@ -10,7 +10,7 @@ To get started, run `./setup.sh`
 
 To start the server, run `./run.sh`
 
-Tested on Ubuntu 20.04 with a Nvidia RTX 2060 and a cheap Chromebook.
+Tested on Ubuntu 22.04 with a Nvidia RTX 2060. Works great remotely via a Chromebook!
 
 ## Perf
 
