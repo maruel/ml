@@ -14,6 +14,9 @@ if [ "$OLD_PIDS" != "" ]; then
   echo $OLD_PIDS | xargs -n1 kill -9
 fi
 
+# https://gradio.app/docs/#interface
+export GRADIO_ANALYTICS_ENABLED=0
+
 export TF_CPP_MIN_LOG_LEVEL=2
 # https://www.tensorflow.org/guide/gpu#limiting_gpu_memory_growth
 export TF_FORCE_GPU_ALLOW_GROWTH=true
