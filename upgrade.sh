@@ -7,37 +7,59 @@ set -eu
 
 source bin/activate
 
-echo "Installing general packages"
-pip3 install --upgrade \
-  Pillow \
-  accelerate \
-  diffusers \
-  ftfy \
-  scipy \
-  transformers
-#  triton
+UNAME=$(uname)
 
-echo "Installing jupyter packages"
-pip3 install --upgrade \
-  ipympl \
-  jupyter jupyterlab \
-  matplotlib
+diffusion() {
+  echo "Installing stable diffusion packages"
+  pip3 install --upgrade \
+    accelerate \
+    diffusers \
+    torch \
+    transformers
 
-echo "Installing tensorflow packages"
-pip3 install --upgrade \
-  kaggle \
-  tensorboard_plugin_profile \
+  # Told this help performance, but no official release since September?
+  #   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
+  #   pip install xformers
+}
+
+general() {
+  echo "Installing general packages"
+  pip3 install --upgrade \
+    Pillow \
+    ftfy \
+    scipy
+  #  triton
+}
+
+jupyter() {
+  echo "Installing jupyter packages"
+  pip3 install --upgrade \
+    ipympl \
+    jupyter jupyterlab \
+    matplotlib
+}
+
+tensorflow() {
+  echo "Installing tensorflow packages"
+  pip3 install --upgrade \
+    kaggle \
+    tensorboard_plugin_profile \
+    tensorflow
+}
+
+cuda() {
+  echo "Installing nvidia/CUDA packages"
+  pip3 install --upgrade jupyterlab-nvdashboard
+}
+
+if [ "$UNAME" = "Darwin" ]; then
+  diffusion
+else
+  diffusion
+  general
+  jupyter
   tensorflow
-
-#echo "Installing nvidia/CUDA packages"
-#pip3 install --upgrade jupyterlab-nvdashboard
-
-# Told this help performances, but no official release since September?
-#   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
-#   pip install xformers
-
-# Note that gradio seems not great, it creates http server and contacts an
-# external web site. Better to not use it.
-# pip3 install --upgrade gradio
+  cuda
+fi
 
 pip3 freeze > requirements.txt
