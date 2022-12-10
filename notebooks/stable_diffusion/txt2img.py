@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""Runs Stable Diffusion on an image."""
+"""Runs Stable Diffusion on an image.
+
+Look at https://stability.ai/sdv2-prompt-book for ideas!
+"""
 
 import argparse
 import os
