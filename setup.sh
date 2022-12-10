@@ -6,27 +6,45 @@
 set -eu
 cd "$(dirname $0)"
 
-# I think gcc is required but not sure. I had it preinstalled for other reasons.
-# If you face challenges, install with: sudo apt install gcc
+UNAME=$(uname)
 
-HAS_NVIDIA=1
-if ! lspci | grep -i nvidia > /dev/null; then
-  echo "Warning: No nvidia card found"
-  # Continue on, it still runs at a bearable speed on CPU.
+if [ "$UNAME" = "Darwin" ]; then
+  # Do stuff
   HAS_NVIDIA=0
+else
+  # I think gcc is required but not sure. I had it preinstalled for other reasons.
+  # If you face challenges, install with: sudo apt install gcc
+
+  HAS_NVIDIA=1
+  if ! lspci | grep -i nvidia > /dev/null; then
+    echo "Warning: No nvidia card found"
+    # Continue on, it still runs at a bearable speed on CPU.
+    HAS_NVIDIA=0
+  fi
 fi
 
 if [ ! -f bin/activate ]; then
   echo "Setting up virtualenv"
-  #python3 -m venv .
-  virtualenv .
+  # On clean ubuntu, pip and venv are not installed. What I personally do is:
+  # wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user
+  # PATH="$PATH:$HOME/.local/bin"
+  # pip install virtualenv
+  if [ which virtualenv > /dev/null ]; then
+    virtualenv .
+  else
+    python3 -m venv .
+  fi
 fi
 
 source bin/activate
 
-# sudo apt install build-essential libssl-dev python3-dev
-# ./upgrade.sh ?
-pip3 install -q -r requirements.txt
+# Ubuntu users may have to:
+#   sudo apt install build-essential libssl-dev python3-dev
+
+# requirements.txt doesn't work at all cross platforms. Always "upgrade" for
+# now. Anyway ML packages are literally adding features on a week-to-week basis.
+#pip3 install -q -r requirements.txt
+./upgrade.sh
 
 if [ "$HAS_NVIDIA" == "1" ]; then
   if [ ! -d /usr/local/cuda/lib64/ ]; then

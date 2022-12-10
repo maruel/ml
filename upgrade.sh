@@ -6,21 +6,31 @@
 set -eu
 
 source bin/activate
+
+echo "Installing general packages"
 pip3 install --upgrade \
   Pillow \
   accelerate \
   diffusers \
   ftfy \
+  scipy \
+  transformers
+#  triton
+
+echo "Installing jupyter packages"
+pip3 install --upgrade \
   ipympl \
   jupyter jupyterlab \
-  jupyterlab-nvdashboard \
+  matplotlib
+
+echo "Installing tensorflow packages"
+pip3 install --upgrade \
   kaggle \
-  matplotlib \
-  scipy \
   tensorboard_plugin_profile \
-  tensorflow \
-  transformers \
-  triton
+  tensorflow
+
+#echo "Installing nvidia/CUDA packages"
+#pip3 install --upgrade jupyterlab-nvdashboard
 
 # Told this help performances, but no official release since September?
 #   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
