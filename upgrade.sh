@@ -15,6 +15,7 @@ diffusion() {
     accelerate \
     diffusers \
     torch \
+    torchvision \
     transformers
 
   # Told this help performance, but no official release since September?

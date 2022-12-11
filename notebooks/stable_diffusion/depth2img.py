@@ -22,6 +22,7 @@ import PIL
 import diffusers
 import numpy as np
 import torch
+import torchvision
 
 class StableDiffusionPipeline(diffusers.StableDiffusionDepth2ImgPipeline):
     """Adds the support to accept a seed directly, instead of a generator."""
@@ -37,7 +38,8 @@ class StableDiffusionPipeline(diffusers.StableDiffusionDepth2ImgPipeline):
             generator = torch.Generator()
             generator.manual_seed(seed)
         out = super(StableDiffusionPipeline, self).__call__(generator=generator, return_dict=True, **kwargs)
-        return out[0], self.depth_map
+        # Convert the depth map from [-1, +1] to a PIL.Image.
+        return out[0], torchvision.transforms.ToPILImage()(self.depth_map[0])
 
 class Depth(StableDiffusionPipeline):
     def prepare_depth_map(self, image, depth_map, batch_size, do_classifier_free_guidance, dtype, device):

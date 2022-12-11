@@ -14,7 +14,7 @@ try:
   import transformers
   import torch
 except ImportError:
-  print("Run: pip install accelerate diffusers transformers torch", file=sys.stderr)
+  print("Run: pip install accelerate diffusers transformers torch torchvision", file=sys.stderr)
   sys.exit(1)
 
 def getdefaultengine():
@@ -88,7 +88,7 @@ def _find(prefix=""):
   return fmt % _search(lambda x: not os.path.isfile((fmt % x) + ".json"), 0, 9999)
 
 def _search(isavail, low, high):
-  if low == high:
+  if low >= high:
     return low if isavail(low) else -1
   mid = (high + low) // 2
   if isavail(mid):

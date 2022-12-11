@@ -60,7 +60,7 @@ class ML(object):
     @sdcommon.autogc
     def run(self, params, **kwargs):
         """Automatically cleans up GPU memory after use."""
-        return self.get(**kwargs)(**d2iargs.kwargs())
+        return self.get(**kwargs)(**params.kwargs())
 
     def get(self, local_files_only=True, **kwargs):
         """Do not try to download by default"""
