@@ -14,8 +14,13 @@ if [ "$OLD_PIDS" != "" ]; then
   echo $OLD_PIDS | xargs -n1 kill -9
 fi
 
+# Not used anymore, just in case.
 # https://gradio.app/docs/#interface
 export GRADIO_ANALYTICS_ENABLED=0
+
+# Override Huggingface default ~/.cache/huggingface path to have it in here.
+# See https://github.com/huggingface/diffusers/blob/main/src/diffusers/utils/__init__.py#L69
+export HF_HOME=$PWD/cache/huggingface
 
 export TF_CPP_MIN_LOG_LEVEL=2
 # https://www.tensorflow.org/guide/gpu#limiting_gpu_memory_growth
