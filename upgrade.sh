@@ -35,6 +35,7 @@ general() {
 jupyter() {
   echo "Installing jupyter packages"
   pip3 install --upgrade \
+    ipyplot \
     ipympl \
     jupyter jupyterlab \
     matplotlib

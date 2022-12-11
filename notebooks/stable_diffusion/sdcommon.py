@@ -18,6 +18,7 @@ except ImportError:
   sys.exit(1)
 
 def getdefaultengine():
+  """Returns the ML engine to use. One of cuda or cpu."""
   if torch.cuda.is_available():
     return "cuda"
   # M1's ML engine isn't that great.
@@ -26,6 +27,7 @@ def getdefaultengine():
   return "cpu"
 
 def autogc(f):
+  """Runs gc.collect() after the function returns."""
   @functools.wraps(f)
   def w(*args, **kwargs):
     try:
@@ -68,6 +70,7 @@ def to_dict(obj):
   return {k: v for k, v in obj.__dict__.items() if not k.startswith("_") and not callable(v)}
 
 def save(ml, params, *images):
+  """Saves ML and its parameters, plus resulting imags."""
   # Do a binary search. Lame but "good enough".
   data = {"ml": to_dict(ml), "params": to_dict(params)}
   base = _find("out/" + ml.algo)
@@ -79,6 +82,23 @@ def save(ml, params, *images):
     else:
       img.save(base + ("_%d.png" % i))
   return base
+
+def unroll(**kwargs):
+  """Unrolls list/tuple elements in a kwargs; annotate each call with a label."""
+  import itertools
+  loops = {k: v for k, v in kwargs.items() if isinstance(v, (list, range, tuple))}
+  if not loops:
+    return [kwargs]
+  kwargs = {k: v for k, v in kwargs.items() if k not in loops}
+  keys = sorted(loops)
+  iters = list(itertools.product(*[loops[k] for k in keys]))
+  out = []
+  for line in iters:
+    label = " ".join("%s:%s" % (k, line[i]) for i, k in enumerate(keys))
+    d = {k: line[i] for i, k in enumerate(keys)}
+    d.update(kwargs)
+    out.append((label, d))
+  return out
 
 ## Private stuff.
 

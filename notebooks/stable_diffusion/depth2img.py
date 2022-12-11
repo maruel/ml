@@ -189,14 +189,14 @@ class ML(object):
 class Params(object):
     def __init__(self, imagename, prompt, neg_prompt="", seed=1, steps=50,
                  strength=0.6, guidance=7.5, num_images=1):
-        assert isinstance(imagename, str) and imagename
-        assert isinstance(prompt, str) and prompt
-        assert isinstance(neg_prompt, str)
-        assert isinstance(seed, int) and 1 <= seed <= 2147483647
-        assert isinstance(steps, int) and 1 <= steps <= 1000
-        assert isinstance(strength, float) and 0. <= strength <= 1.
-        assert isinstance(guidance, float) and 0. <= guidance <= 15.
-        assert isinstance(num_images, int) and 1 <= num_images <= 1024
+        assert isinstance(imagename, str) and imagename, imagename
+        assert isinstance(prompt, str) and prompt, prompt
+        assert isinstance(neg_prompt, str), neg_prompt
+        assert isinstance(seed, int) and 1 <= seed <= 2147483647, seed
+        assert isinstance(steps, int) and 1 <= steps <= 1000, steps
+        assert isinstance(strength, float) and 0. <= strength <= 1., strength
+        assert isinstance(guidance, float) and 0. <= guidance <= 15., guidance
+        assert isinstance(num_images, int) and 1 <= num_images <= 1024, num_images
         self.imagename = imagename
         self.prompt = prompt
         self.neg_prompt = neg_prompt
