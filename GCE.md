@@ -1,8 +1,3 @@
-## Colab
-
-https://colab.research.google.com/
-
-
 ## GCE
 
 [Integrated](https://cloud.google.com/compute/all-pricing#a2_machine_types):

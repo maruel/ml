@@ -74,6 +74,8 @@ def save(ml, params, *images):
   # Do a binary search. Lame but "good enough".
   data = {"ml": to_dict(ml), "params": to_dict(params)}
   base = _find("out/" + ml.algo)
+  if not os.path.isdir("out"):
+    os.mkdir("out")
   with open(base + ".json", "w") as f:
     json.dump(data, f, sort_keys=True, indent=2)
   for i, img in enumerate(images):
