@@ -45,8 +45,10 @@ tensorflow() {
   echo "Installing tensorflow packages"
   pip3 install --upgrade \
     kaggle \
+    pycocotools \
     tensorboard_plugin_profile \
-    tensorflow
+    tensorflow \
+    tensorflow_datasets
 }
 
 cuda() {
