@@ -48,3 +48,13 @@ VRAM allocations. Kill with:
 ```
 nvidia-smi | grep 'python' | awk '{ print $5 }' | xargs -n1 kill
 ```
+
+## Cuda
+
+Ubuntu 22.04:
+https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
+
+```
+sudo apt install cuda-11-8 libcudnn8 tensorrt-libs
+python3 -c "import tensorflow as tf;print(tf.config.list_physical_devices('GPU'))"
+```
