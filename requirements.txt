@@ -91,7 +91,7 @@ kiwisolver==1.4.4
 libclang==14.0.6
 linkify-it-py==1.0.3
 Markdown==3.4.1
-markdown-it-py==2.1.0
+markdown-it-py==2.2.0
 MarkupSafe==2.1.1
 matplotlib==3.6.2
 matplotlib-inline==0.1.6
