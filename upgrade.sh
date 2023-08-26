@@ -61,7 +61,7 @@ cuda() {
   pip3 install --upgrade jupyterlab-nvdashboard
 }
 
-pip install --upgrade pip
+pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   diffusion
 else

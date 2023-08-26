@@ -8,10 +8,14 @@ cd "$(dirname $0)"
 
 source bin/activate
 
-OLD_PIDS="$(nvidia-smi | grep python3 | awk '{ print $5 }')"
-if [ "$OLD_PIDS" != "" ]; then
-  echo "Killing stale python processes"
-  echo $OLD_PIDS | xargs -n1 kill -9
+UNAME=$(uname)
+
+if [ "$UNAME" = "Linux" ]; then
+  OLD_PIDS="$(nvidia-smi | grep python3 | awk '{ print $5 }')"
+  if [ "$OLD_PIDS" != "" ]; then
+    echo "Killing stale python processes"
+    echo $OLD_PIDS | xargs -n1 kill -9
+  fi
 fi
 
 # Not used anymore, just in case.

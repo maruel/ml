@@ -29,7 +29,7 @@ if [ ! -f bin/activate ]; then
   # wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user
   # PATH="$PATH:$HOME/.local/bin"
   # pip install virtualenv
-  if [ which virtualenv > /dev/null ]; then
+  if which virtualenv > /dev/null; then
     virtualenv .
   else
     python3 -m venv .

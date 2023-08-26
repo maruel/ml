@@ -13,18 +13,23 @@ try:
   # Not used here but will fail at runtime.
   import transformers
   import torch
-except ImportError:
-  print("Run: pip install accelerate diffusers transformers torch torchvision", file=sys.stderr)
+except ImportError as e:
+  print(e)
+  print("Run: pip3 install accelerate diffusers transformers torch torchvision Pillow", file=sys.stderr)
   sys.exit(1)
+
 
 def getdefaultengine():
   """Returns the ML engine to use. One of cuda or cpu."""
   if torch.cuda.is_available():
     return "cuda"
-  # M1's ML engine isn't that great.
-  #if torch.backends.mps.is_available():
-  #  return "mps"
+  # The MPS engine on a M1 Pro is slower than pure CPU while also affecting
+  # system performance significantly.
+  # Keeping this in case this improves later.
+  if torch.backends.mps.is_available():
+    return "mps"
   return "cpu"
+
 
 def autogc(f):
   """Runs gc.collect() after the function returns."""
@@ -35,6 +40,7 @@ def autogc(f):
     finally:
       gc.collect()
   return w
+
 
 def getimg(name):
   """Retrieve a picture and resize it to be less than 1024x768 or 768x1024.
@@ -63,11 +69,14 @@ def getimg(name):
   img.name = name
   return img
 
+
 def classesdict(*classes):
   return {cls.__name__: cls for cls in classes}
 
+
 def to_dict(obj):
   return {k: v for k, v in obj.__dict__.items() if not k.startswith("_") and not callable(v)}
+
 
 def save(ml, params, *images):
   """Saves ML and its parameters, plus resulting imags."""
@@ -84,6 +93,7 @@ def save(ml, params, *images):
     else:
       img.save(base + ("_%d.png" % i))
   return base
+
 
 def unroll(**kwargs):
   """Unrolls list/tuple elements in a kwargs; annotate each call with a label."""
@@ -102,12 +112,15 @@ def unroll(**kwargs):
     out.append((label, d))
   return out
 
+
 ## Private stuff.
+
 
 def _find(prefix=""):
   """Finds the next available output file by looking for json files."""
   fmt = prefix + "%05d"
   return fmt % _search(lambda x: not os.path.isfile((fmt % x) + ".json"), 0, 9999)
+
 
 def _search(isavail, low, high):
   if low >= high:

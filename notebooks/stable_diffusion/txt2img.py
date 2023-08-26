@@ -15,6 +15,7 @@ Look at https://stability.ai/sdv2-prompt-book for ideas!
 import argparse
 import os
 import sys
+import time
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,7 +76,7 @@ class ML(object):
         # See https://huggingface.co/docs/diffusers/optimization/fp16
         # for more optimizations.
         # TODO(maruel): bf16 / tf32
-        if self.engine == "cpu":
+        if self.engine in ("cpu", "mps"):
           dtype = torch.float32
         else:
           dtype = torch.float16
@@ -83,7 +84,7 @@ class ML(object):
             self.model,
             #revision=self.revision,
             torch_dtype=dtype,
-            #use_safetensors=True,
+            use_safetensors=True,
             local_files_only=local_files_only,
             **kwargs)
         pipe.scheduler = self._schedulers[self.schedulername].from_config(
@@ -101,9 +102,18 @@ class ML(object):
             pipe.enable_sequential_cpu_offload()
           #pipe.enable_model_cpu_offload()
         pipe.to(self.engine)
+        if self.engine == "cuda":
+          # Memory efficient attention is only available on GPU.
+          pipe.enable_xformers_memory_efficient_attention()
+        else:
+          # TODO(maruel): Get ram size.
+          ram = 128*1024*1024*1024
+          if ram < 20*1024*1024*1024:
+            # If the image is very large, generate tiles.
+            # It's less nice due to boundary errors.
+            # Automatically turned off when the image is 512x512 or smaller.
+            pipe.enable_vae_tiling()
 
-        # Memory efficient attention:
-        pipe.enable_xformers_memory_efficient_attention()
         # Useful once we support mulitple prompts at once. Ask to do one prompt at a time.
         pipe.enable_vae_slicing()
         return pipe
@@ -146,13 +156,13 @@ class Params(object):
 def run(model, prompt, steps, engine="cpu"):
   """Runs a single job."""
   # This modifies the global state. Only has effect on Ampere.
-  torch.backends.cuda.matmul.allow_tf32 = True
+  if torch.cuda.is_available():
+    torch.backends.cuda.matmul.allow_tf32 = True
 
-  ml = depth2img.ML(model=model, engine=engine)
-  params = depth2img.Params(prompt=prompt, steps=steps)
-  start = time.time()
-  img, _ = ml.run(params) #, local_files_only=False)
-  return img
+  ml = ML(model=model, engine=engine)
+  params = Params(prompt=prompt, steps=steps)
+  img, _ = ml.run(params, local_files_only=False)
+  return ml, params, img
 
 
 def main():
@@ -172,9 +182,8 @@ def main():
       help="Stable Diffusion model to use")
   # TODO(maruel): Size
   args = parser.parse_args()
-  if not args.out:
-    args.out = os.path.join(THIS_DIR, "out", args.prompt.replace(".", "") + ".png")
-  img = run(
+  start = time.time()
+  ml, params, img = run(
     model=args.model,
     prompt=args.prompt,
     steps=args.steps,
@@ -182,7 +191,8 @@ def main():
   )
   print("Took %.1fs" % (time.time()-start))
   if args.out:
-    data = {"ml": to_dict(ml), "params": to_dict(params)}
+    args.out = os.path.join(THIS_DIR, "out", args.prompt.replace(".", "") + ".png")
+    data = {"ml": sdcommon.to_dict(ml), "params": sdcommon.to_dict(params)}
     base = args.out.rsplit(".", 2)[0]
     with open(base + ".json", "w") as f:
       json.dump(data, f, sort_keys=True, indent=2)
