@@ -86,26 +86,24 @@ class ML(object):
             #use_safetensors=True,
             local_files_only=local_files_only,
             **kwargs)
-        pipe.to(self.engine)
         pipe.scheduler = self._schedulers[self.schedulername].from_config(
             pipe.scheduler.config)
         if self.engine == "cuda":
           vram = torch.cuda.get_device_properties(0).total_memory
-          if vram < 7*1024*1024*1024:
-            #pipe.enable_attention_slicing
-            # Memory efficient attention:
-            pipe.enable_xformers_memory_efficient_attention()
+          if vram < 7*1024*1024*1024 and kwargs["width"]*kwargs["height"] > 1024*1024:
             # If the image is very large, generate tiles.
             # It's less nice due to boundary errors.
             # Automatically turned off when the image is 512x512 or smaller.
-            #pipe.enable_vae_tiling()
-            #pipe.enable_model_cpu_offload()
+            pipe.enable_vae_tiling()
+          if vram < 2*1024*1024*1024:
             # Reduce memory usage by loading the items at each steps.
-            # Will slow down inference.
-            # WARNING: Has to be done before the
-            # pipe.to(self.engine) call above.
-            #pipe.enable_sequential_cpu_offload()
+            # Will slow down inference! Has to be done before pipe.to(engine).
+            pipe.enable_sequential_cpu_offload()
+          #pipe.enable_model_cpu_offload()
+        pipe.to(self.engine)
 
+        # Memory efficient attention:
+        pipe.enable_xformers_memory_efficient_attention()
         # Useful once we support mulitple prompts at once. Ask to do one prompt at a time.
         pipe.enable_vae_slicing()
         return pipe

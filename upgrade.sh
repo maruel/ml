@@ -16,9 +16,10 @@ diffusion() {
     diffusers \
     torch \
     torchvision \
-    transformers
+    transformers \
+    xformers
 
-  # Told this help performance, but no official release since September?
+  # Told this help performance:
   #   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
   #   pip install xformers
 }
@@ -37,8 +38,11 @@ jupyter() {
   pip3 install --upgrade \
     ipyplot \
     ipympl \
-    jupyter jupyterlab \
-    matplotlib
+    jupyter \
+    jupyterlab \
+    jupyterlab-lsp \
+    matplotlib \
+    python-language-server
 }
 
 tensorflow() {
@@ -53,9 +57,11 @@ tensorflow() {
 
 cuda() {
   echo "Installing nvidia/CUDA packages"
+  # TODO(maruel): Currently incompatible with jupyterlab 4.
   pip3 install --upgrade jupyterlab-nvdashboard
 }
 
+pip install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   diffusion
 else
