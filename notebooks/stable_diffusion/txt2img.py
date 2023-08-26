@@ -5,6 +5,11 @@
 See documentation at https://pypi.org/project/diffusers/
 
 Look at https://stability.ai/sdv2-prompt-book for ideas!
+
+# https://civitai.com/models/117761/tiny-home-concept
+# https://civitai.com/api/download/models/125833
+# https://civitai.com/models/133700/curly-hair-slider-lora
+# https://medium.com/mlearning-ai/using-civitai-models-with-diffusers-package-45e0c475a67e
 """
 
 import argparse
@@ -18,6 +23,7 @@ import sdcommon
 import diffusers
 import torch
 
+
 class StableDiffusionPipeline(diffusers.StableDiffusionPipeline):
   """Adds the support to accept a seed directly, instead of a generator."""
   def __call__(self, seed, **kwargs):
@@ -28,7 +34,9 @@ class StableDiffusionPipeline(diffusers.StableDiffusionPipeline):
       generator.manual_seed(seed)
     return super(StableDiffusionPipeline, self).__call__(generator=generator, return_dict=False, **kwargs)
 
+
 class ML(object):
+    """Runs a generation job."""
     _diffusers = sdcommon.classesdict(StableDiffusionPipeline)
     _schedulers = sdcommon.classesdict(
         diffusers.DDIMScheduler,
@@ -64,33 +72,65 @@ class ML(object):
 
     def get(self, local_files_only=True, **kwargs):
         """Do not try to download by default"""
+        # See https://huggingface.co/docs/diffusers/optimization/fp16
+        # for more optimizations.
+        # TODO(maruel): bf16 / tf32
+        if self.engine == "cpu":
+          dtype = torch.float32
+        else:
+          dtype = torch.float16
         pipe = self._diffusers[self.diffusername].from_pretrained(
             self.model,
             #revision=self.revision,
-            torch_dtype=torch.float32 if self.engine == "cpu" else torch.float16,
+            torch_dtype=dtype,
+            #use_safetensors=True,
             local_files_only=local_files_only,
             **kwargs)
         pipe.to(self.engine)
         pipe.scheduler = self._schedulers[self.schedulername].from_config(
             pipe.scheduler.config)
         if self.engine == "cuda":
-            pipe.enable_attention_slicing()
+          vram = torch.cuda.get_device_properties(0).total_memory
+          if vram < 7*1024*1024*1024:
+            #pipe.enable_attention_slicing
+            # Memory efficient attention:
+            pipe.enable_xformers_memory_efficient_attention()
+            # If the image is very large, generate tiles.
+            # It's less nice due to boundary errors.
+            # Automatically turned off when the image is 512x512 or smaller.
+            #pipe.enable_vae_tiling()
+            #pipe.enable_model_cpu_offload()
+            # Reduce memory usage by loading the items at each steps.
+            # Will slow down inference.
+            # WARNING: Has to be done before the
+            # pipe.to(self.engine) call above.
+            #pipe.enable_sequential_cpu_offload()
+
+        # Useful once we support mulitple prompts at once. Ask to do one prompt at a time.
+        pipe.enable_vae_slicing()
         return pipe
 
+
 class Params(object):
-    def __init__(self, prompt, neg_prompt="", seed=1, steps=50, guidance=7.5, num_images=1):
+    """Text to Image Parameters as a class so it can be easily serialized."""
+    def __init__(self, prompt, neg_prompt="", seed=1, steps=50, guidance=7.5, num_images=1,
+                width=768, height=768):
         assert isinstance(prompt, str) and prompt
         assert isinstance(neg_prompt, str)
         assert isinstance(seed, int) and 1 <= seed <= 2147483647
         assert isinstance(steps, int) and 1 <= steps <= 1000
         assert isinstance(guidance, float) and 0. <= guidance <= 15.
         assert isinstance(num_images, int) and 1 <= num_images <= 1024
+        assert isinstance(width, int) and 16 <= width <= 8192
+        assert isinstance(height, int) and 16 <= height <= 8192
         self.prompt = prompt
         self.neg_prompt = neg_prompt
         self.seed = seed
         self.steps = steps
         self.guidance = guidance
         self.num_images = num_images
+        self.width = width
+        self.height = height
 
     def kwargs(self):
         return {
@@ -99,9 +139,23 @@ class Params(object):
             "guidance_scale": self.guidance,
             "negative_prompt": self.neg_prompt,
             "num_images_per_prompt": self.num_images,
-            # Converted into generator by _DepthBase.__call__().
             "seed": self.seed,
+            "width": self.width,
+            "height": self.height,
         }
+
+
+def run(model, prompt, steps, engine="cpu"):
+  """Runs a single job."""
+  # This modifies the global state. Only has effect on Ampere.
+  torch.backends.cuda.matmul.allow_tf32 = True
+
+  ml = depth2img.ML(model=model, engine=engine)
+  params = depth2img.Params(prompt=prompt, steps=steps)
+  start = time.time()
+  img, _ = ml.run(params) #, local_files_only=False)
+  return img
+
 
 def main():
   parser = argparse.ArgumentParser(
@@ -117,15 +171,17 @@ def main():
       help="Processor (CPU/GPU) to use")
   parser.add_argument(
       "--model", default="stabilityai/stable-diffusion-2-1",
-      help="Stable Diffusion model to use"  )
+      help="Stable Diffusion model to use")
+  # TODO(maruel): Size
   args = parser.parse_args()
   if not args.out:
     args.out = os.path.join(THIS_DIR, "out", args.prompt.replace(".", "") + ".png")
-
-  ml = depth2img.ML(model=args.model, engine=args.engine)
-  params = depth2img.Params(prompt=args.prompt, steps=args.steps)
-  start = time.time()
-  img, _ = ml.run(params) #, local_files_only=False)
+  img = run(
+    model=args.model,
+    prompt=args.prompt,
+    steps=args.steps,
+    engine=args.engine,
+  )
   print("Took %.1fs" % (time.time()-start))
   if args.out:
     data = {"ml": to_dict(ml), "params": to_dict(params)}
@@ -136,6 +192,7 @@ def main():
   else:
     print("Saved as", sdcommon.save(ml, params, img[0]))
   return 0
+
 
 if __name__ == "__main__":
   sys.exit(main())
