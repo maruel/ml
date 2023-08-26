@@ -4,6 +4,9 @@ import json
 import os
 import sys
 
+# Silence tensorflow even if we don't use it here.
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 try:
   import PIL
   # Not used here but will fail at runtime after downloading.

@@ -91,7 +91,8 @@ class ML(object):
             pipe.scheduler.config)
         if self.engine == "cuda":
           vram = torch.cuda.get_device_properties(0).total_memory
-          if vram < 7*1024*1024*1024 and kwargs["width"]*kwargs["height"] > 1024*1024:
+          # TODO(maruel): We don't know the width/height params yet.
+          if vram < 2*1024*1024*1024: #and kwargs["width"]*kwargs["height"] > 1024*1024:
             # If the image is very large, generate tiles.
             # It's less nice due to boundary errors.
             # Automatically turned off when the image is 512x512 or smaller.
@@ -153,14 +154,14 @@ class Params(object):
         }
 
 
-def run(model, prompt, steps, engine="cpu"):
+def run(model, prompt, steps, seed, engine="cpu"):
   """Runs a single job."""
   # This modifies the global state. Only has effect on Ampere.
   if torch.cuda.is_available():
     torch.backends.cuda.matmul.allow_tf32 = True
 
   ml = ML(model=model, engine=engine)
-  params = Params(prompt=prompt, steps=steps)
+  params = Params(prompt=prompt, steps=steps, seed=seed)
   img, _ = ml.run(params, local_files_only=False)
   return ml, params, img
 
@@ -171,6 +172,9 @@ def main():
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("-p", "--prompt", help="prompt to generate", required=True)
   parser.add_argument("--out", help="png to write, defaults to next available out/txt2img00000.png")
+  parser.add_argument(
+      "--seed", default=1, type=int,
+      help="seed value")
   parser.add_argument(
       "--steps", default=25, type=int,
       help="steps to run, more the better; use low value for quick experiment")
@@ -187,6 +191,7 @@ def main():
     model=args.model,
     prompt=args.prompt,
     steps=args.steps,
+    seed=args.seed,
     engine=args.engine,
   )
   print("Took %.1fs" % (time.time()-start))
