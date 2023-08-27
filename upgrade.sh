@@ -14,14 +14,15 @@ diffusion() {
   pip3 install --upgrade \
     accelerate \
     diffusers \
+    omegaconf \
     torch \
     torchvision \
     transformers \
     xformers
 
-  # Told this help performance:
-  #   pip install --upgrade git+https://github.com/facebookresearch/xformers@main
-  #   pip install xformers
+  # https://github.com/JamesQFreeman/LoRA-ViT
+  #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
+  pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
 }
 
 general() {
