@@ -5,7 +5,8 @@ set -eu
 if [ ! -f ChineseLandscapeArt_v10.safetensors ]; then
   # https://civitai.com/user/Celsia/models
   # beautiful landscape scenes in the style of Chinese watercolour paintings.
-  wget https://civitai.com/api/download/models/130803 --content-disposition
+  #wget https://civitai.com/api/download/models/130803 --content-disposition
+  curl -OJL https://civitai.com/api/download/models/130803
 fi
 
 if [ ! -f convert_original_stable_diffusion_to_diffusers.py ]; then
@@ -22,3 +23,5 @@ python convert_original_stable_diffusion_to_diffusers.py \
     --checkpoint_path ChineseLandscapeArt_v10.safetensors \
     --dump_path ChineseLandscapeArt_v10/ \
     --from_safetensors
+
+rm convert_original_stable_diffusion_to_diffusers.py
