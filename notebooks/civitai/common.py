@@ -53,42 +53,24 @@ class Params(object):
 
 
 class CivitaiModel(object):
-    """The model to run."""
-    def __init__(
-        self, doc_url, model_url, filename, type, base_model="runwayml/stable-diffusion-v1-5",
-        clip_skip=1):
+    """Base class that defines the model to run."""
+    def __init__(self, doc_url, model_url, filename):
         """The model to use.
-        See
-        https://github.com/civitai/civitai/wiki/How-to-use-models
 
-        type is either:
-          "checkpoint" for a Checkpoint Merge
-          "lora" for a LoRA
-
-        base_model is only needed if clip_skip > 1.
-
-        clip_skip follows community convention:
-          clip_skip = 1 uses the all text encoder layers.
-          clip_skip = 2 skips the last text encoder layer.
-
-        encoder is only used if clip_skip > 1.
+        See https://github.com/civitai/civitai/wiki/How-to-use-models
         """
         assert isinstance(doc_url, str)
         assert isinstance(model_url, str)
-        assert type in ("checkpoint", "lora")
         assert not filename or os.path.splitext(filename)[1] == ".safetensors", filename
         self.doc_url = doc_url
         self.model_url = model_url
         # Sadly the Cloudflare web worker that civitai uses doesn't allow HEAD.
-        self.filename = filename
-        self.type = type
-        self.base_model = base_model
-        self.clip_skip = clip_skip
+        self._filename = filename
 
     def download(self):
-        if self.filename and os.path.isfile(self.filename):
-          print("Loading", self.filename)
-          return self.filename
+        if self._filename and os.path.isfile(self._filename):
+          print("Loading", self._filename)
+          return self._filename
         print("Downloading", self.model_url)
         req = urllib.request.Request(url=self.model_url, headers={"User-Agent": "curl/7.81.0"})
         last = [""]
@@ -98,16 +80,43 @@ class CivitaiModel(object):
             sys.stderr.write(n)
             last[0] = n
           sys.stderr.flush()
-        self.filename, _ = _urlretrieve(req, self.filename, reporthook=reporthook)
-        sys.stderr.write("\rDownloaded %s\n" % self.filename)
+        self._filename, _ = _urlretrieve(req, self._filename, reporthook=reporthook)
+        sys.stderr.write("\rDownloaded %s\n" % self._filename)
         sys.stderr.flush()
-        return self.filename
+        return self._filename
 
     def convert(self):
         """Converts a safetensors into something usable.
 
         There's something magical here that I (M-A) don't understand yet.
+        """
+        raise NotImplementedError()
 
+    def to_pipe(self):
+        """Returns a loaded ML pipeline."""
+        raise NotImplementedError()
+
+
+class CivitaiCheckpointModel(CivitaiModel):
+    """The model to run."""
+    def __init__(self, doc_url, model_url, filename, base_model, clip_skip):
+        """The model to use.
+
+        base_model is only needed if clip_skip > 1.
+
+        clip_skip follows community convention:
+          clip_skip = 1 uses the all text encoder layers.
+          clip_skip = 2 skips the last text encoder layer.
+        """
+        super().__init__(
+            doc_url, model_url, filename)
+        self.base_model = base_model
+        self.clip_skip = clip_skip
+
+    def convert(self):
+        """Converts a safetensors into something usable.
+
+        There's something magical here that I (M-A) don't understand yet.
         """
         filename = self.download()
         dump_path = os.path.splitext(filename)[0]
@@ -141,7 +150,6 @@ class CivitaiModel(object):
 
     def to_pipe(self):
         """Returns a loaded ML pipeline."""
-        # TODO(maruel): Implement LoRA assert self.type == "checkpoint"
         model_path = self.convert()
         if self.clip_skip > 1:
             pipe = diffusers.DiffusionPipeline.from_pretrained(
@@ -174,6 +182,33 @@ class CivitaiModel(object):
           # Doesn't seem to have any impact?
           pipe.enable_xformers_memory_efficient_attention()
         return pipe
+
+
+class CivitaiLoRAModel(CivitaiModel):
+    """The model to run."""
+    def __init__(self, doc_url, model_url, filename, base_model, clip_skip):
+        """The model to use."""
+        super().__init__(
+            doc_url, model_url, filename)
+        self.base_model = base_model
+        self.clip_skip = clip_skip
+
+    def convert(self):
+        """Converts a safetensors into something usable.
+
+        There's something magical here that I (M-A) don't understand yet.
+        """
+        filename = self.download()
+        dump_path = os.path.splitext(filename)[0]
+        if not os.path.isdir(dump_path):
+          print("Converting", filename)
+          raise NotImplementedError()
+
+    def to_pipe(self):
+        """Returns a loaded ML pipeline."""
+        # TODO(maruel): Implement LoRA assert self.type == "checkpoint"
+        model_path = self.convert()
+        raise NotImplementedError()
 
 
 def get_prompt_embeddings(pipe, prompt, negative_prompt, split_character=","):
