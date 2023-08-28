@@ -25,24 +25,27 @@ known_models = {
         doc_url="https://civitai.com/models/120298/chinese-landscape-art",
         model_url="https://civitai.com/api/download/models/130803",
         filename="ChineseLandscapeArt_v10.safetensors",
+        keywords=("beautiful Chinese Landscape Art", "Chinese Landscape Art", "water colors"),
         base_model=None,
+        # I'm not sure why it's not necessary. I suspect that since the file is
+        # huge, it is embedded.
         #base_model="runwayml/stable-diffusion-v1-5",
         clip_skip=1,
     ),
-    # Keywords: "curly hair", "straight hair"
     "curly_hair": common.CivitaiLoRAModel(
       doc_url="https://civitai.com/models/133700/curly-hair-slider-lora",
       model_url="https://civitai.com/api/download/models/147196",
       filename="curly_hair_slider_v1.safetensors",
-      base_model=None,
+      keywords=("curly hair", "straight hair"),
+      base_model="runwayml/stable-diffusion-v1-5",
       clip_skip=0,
     ),
-    # Keyword: interiortinyhouse
     "tiny_home": common.CivitaiLoRAModel(
       doc_url="https://civitai.com/models/117761/tiny-home-concept",
       model_url="https://civitai.com/api/download/models/128150",
       filename="ARWinteriortinyhouse.safetensors",
-      base_model=None,
+      keywords=("interiortinyhouse",),
+      base_model="runwayml/stable-diffusion-v1-5",
       clip_skip=2,
     ),
     #"sd21": common.HuggingFaceModel(

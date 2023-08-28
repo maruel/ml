@@ -8,6 +8,7 @@ import urllib.request
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import diffusers
+import safetensors
 import torch
 import transformers
 
@@ -54,7 +55,7 @@ class Params(object):
 
 class CivitaiModel(object):
     """Base class that defines the model to run."""
-    def __init__(self, doc_url, model_url, filename):
+    def __init__(self, doc_url, model_url, filename, keywords):
         """The model to use.
 
         See https://github.com/civitai/civitai/wiki/How-to-use-models
@@ -66,6 +67,7 @@ class CivitaiModel(object):
         self.model_url = model_url
         # Sadly the Cloudflare web worker that civitai uses doesn't allow HEAD.
         self._filename = filename
+        self.keywords = keywords
 
     def download(self):
         if self._filename and os.path.isfile(self._filename):
@@ -99,7 +101,7 @@ class CivitaiModel(object):
 
 class CivitaiCheckpointModel(CivitaiModel):
     """The model to run."""
-    def __init__(self, doc_url, model_url, filename, base_model, clip_skip):
+    def __init__(self, doc_url, model_url, filename, keywords, base_model, clip_skip):
         """The model to use.
 
         base_model is only needed if clip_skip > 1.
@@ -108,8 +110,7 @@ class CivitaiCheckpointModel(CivitaiModel):
           clip_skip = 1 uses the all text encoder layers.
           clip_skip = 2 skips the last text encoder layer.
         """
-        super().__init__(
-            doc_url, model_url, filename)
+        super().__init__(doc_url, model_url, filename, keywords)
         self.base_model = base_model
         self.clip_skip = clip_skip
 
@@ -174,7 +175,7 @@ class CivitaiCheckpointModel(CivitaiModel):
                 requires_safety_checker=False,
                 local_files_only=True,
             )
-        pipe = pipe.to(device)
+        #pipe = pipe.to(device)
         pipe.scheduler = diffusers.EulerAncestralDiscreteScheduler.from_config(
             pipe.scheduler.config)
         if True: # self.engine == "cuda":
@@ -185,11 +186,13 @@ class CivitaiCheckpointModel(CivitaiModel):
 
 
 class CivitaiLoRAModel(CivitaiModel):
-    """The model to run."""
-    def __init__(self, doc_url, model_url, filename, base_model, clip_skip):
+    """The model to run.
+
+    See https://huggingface.co/docs/diffusers/training/lora
+    """
+    def __init__(self, doc_url, model_url, filename, keywords, base_model, clip_skip):
         """The model to use."""
-        super().__init__(
-            doc_url, model_url, filename)
+        super().__init__(doc_url, model_url, filename, keywords)
         self.base_model = base_model
         self.clip_skip = clip_skip
 
@@ -202,13 +205,78 @@ class CivitaiLoRAModel(CivitaiModel):
         dump_path = os.path.splitext(filename)[0]
         if not os.path.isdir(dump_path):
           print("Converting", filename)
-          raise NotImplementedError()
+          # See
+          # https://github.com/huggingface/diffusers/blob/main/scripts/convert_lora_safetensor_to_diffusers.py
+          #checkpoint_path = args.checkpoint_path
+          pipe = self._convert(self.base_model, filename, "lora_unet", "lora_te", 0.75)
+          #pipe = pipe.to(device)
+          pipe.save_pretrained(dump_path, safe_serialization=True)
+        return dump_path
+
+    @staticmethod
+    def _convert(base_model_path, checkpoint_path, lora_prefix_unet, lora_prefix_text_encoder, alpha):
+        pipe = diffusers.StableDiffusionPipeline.from_pretrained(base_model_path, torch_dtype=torch.float32)
+        # Load LoRA weight from .safetensors
+        state_dict = safetensors.torch.load_file(checkpoint_path)
+        visited = []
+        # Directly update weight in diffusers model.
+        for key in state_dict:
+            # It is suggested to print out the key, it usually will be something like below
+            # "lora_te_text_model_encoder_layers_0_self_attn_k_proj.lora_down.weight".
+            # As we have set the alpha beforehand, so just skip.
+            if ".alpha" in key or key in visited:
+                continue
+            if "text" in key:
+                layer_infos = key.split(".")[0].split(lora_prefix_text_encoder + "_")[-1].split("_")
+                curr_layer = pipe.text_encoder
+            else:
+                layer_infos = key.split(".")[0].split(lora_prefix_unet + "_")[-1].split("_")
+                curr_layer = pipe.unet
+            # Find the target layer.
+            temp_name = layer_infos.pop(0)
+            while len(layer_infos) > -1:
+                try:
+                    curr_layer = curr_layer.__getattr__(temp_name)
+                    if len(layer_infos) > 0:
+                        temp_name = layer_infos.pop(0)
+                    elif len(layer_infos) == 0:
+                        break
+                except Exception:
+                    # MARUEL: WTF
+                    if len(temp_name) > 0:
+                        temp_name += "_" + layer_infos.pop(0)
+                    else:
+                        temp_name = layer_infos.pop(0)
+            pair_keys = []
+            if "lora_down" in key:
+                pair_keys.append(key.replace("lora_down", "lora_up"))
+                pair_keys.append(key)
+            else:
+                pair_keys.append(key)
+                pair_keys.append(key.replace("lora_up", "lora_down"))
+            # Update weight.
+            if len(state_dict[pair_keys[0]].shape) == 4:
+                weight_up = state_dict[pair_keys[0]].squeeze(3).squeeze(2).to(torch.float32)
+                weight_down = state_dict[pair_keys[1]].squeeze(3).squeeze(2).to(torch.float32)
+                curr_layer.weight.data += alpha * torch.mm(weight_up, weight_down).unsqueeze(2).unsqueeze(3)
+            else:
+                weight_up = state_dict[pair_keys[0]].to(torch.float32)
+                weight_down = state_dict[pair_keys[1]].to(torch.float32)
+                curr_layer.weight.data += alpha * torch.mm(weight_up, weight_down)
+            # Update visited list.
+            for item in pair_keys:
+                visited.append(item)
+        return pipe
 
     def to_pipe(self):
         """Returns a loaded ML pipeline."""
-        # TODO(maruel): Implement LoRA assert self.type == "checkpoint"
         model_path = self.convert()
-        raise NotImplementedError()
+        pipe = diffusers.StableDiffusionPipeline.from_pretrained(
+            self.base_model, torch_dtype=torch_dtype, use_safetensors=True)
+        pipe.scheduler = diffusers.DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        pipe.unet.load_attn_procs(model_path)
+        pipe.to(device)
+        return pipe
 
 
 def get_prompt_embeddings(pipe, prompt, negative_prompt, split_character=","):
