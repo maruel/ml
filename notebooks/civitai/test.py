@@ -21,18 +21,30 @@ import common
 
 
 known_models = {
-    "chinese_landscape_art": common.Model(
+    "chinese_landscape_art": common.CivitaiModel(
         doc_url="https://civitai.com/models/120298/chinese-landscape-art",
         model_url="https://civitai.com/api/download/models/130803",
         filename="ChineseLandscapeArt_v10.safetensors",
         type="checkpoint",
     ),
-    "sd21": common.Model(
-        doc_url="stabilityai/stable-diffusion-2-1",
-        model_url="todo",
-        filename="foo.safetensors",
-        type="checkpoint",
+    # Keywords: "curly hair", "straight hair"
+    "curly_hair": common.CivitaiModel(
+      doc_url="https://civitai.com/models/133700/curly-hair-slider-lora",
+      model_url="https://civitai.com/api/download/models/147196",
+      filename="curly_hair_slider_v1.safetensors",
+      type="lora",
     ),
+    # Keyword: interiortinyhouse
+    "tiny_home": common.CivitaiModel(
+      doc_url="https://civitai.com/models/117761/tiny-home-concept",
+      model_url="https://civitai.com/api/download/models/128150",
+      filename="ARWinteriortinyhouse.safetensors",
+      type="lora",
+      clip_skip=2,
+    ),
+    #"sd21": common.HuggingFaceModel(
+    #    model="stabilityai/stable-diffusion-2-1",
+    #),
 }
 
 
@@ -96,7 +108,7 @@ def main():
     params = common.Params(prompt=args.prompt, neg_prompt=args.neg_prompt)
     imgs = generate_images(
         pipe=known_models[args.model].to_pipe(),
-        out="out/temple4_%05d.png",
+        out="out/sd_%05d.png",
         params=params,
     )
     # TODO(maruel): Upscale later with https://huggingface.co/spaces/doevent/Face-Real-ESRGAN

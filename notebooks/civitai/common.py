@@ -1,3 +1,4 @@
+import cgi
 import contextlib
 import os
 import sys
@@ -51,7 +52,7 @@ class Params(object):
         }
 
 
-class Model(object):
+class CivitaiModel(object):
     """The model to run."""
     def __init__(
         self, doc_url, model_url, filename, type, base_model="runwayml/stable-diffusion-v1-5",
@@ -75,7 +76,7 @@ class Model(object):
         assert isinstance(doc_url, str)
         assert isinstance(model_url, str)
         assert type in ("checkpoint", "lora")
-        assert os.path.splitext(filename)[1] == ".safetensors", filename
+        assert not filename or os.path.splitext(filename)[1] == ".safetensors", filename
         self.doc_url = doc_url
         self.model_url = model_url
         # Sadly the Cloudflare web worker that civitai uses doesn't allow HEAD.
@@ -85,20 +86,20 @@ class Model(object):
         self.clip_skip = clip_skip
 
     def download(self):
-        if os.path.isfile(self.filename):
+        if self.filename and os.path.isfile(self.filename):
           print("Loading", self.filename)
           return self.filename
         print("Downloading", self.model_url)
         req = urllib.request.Request(url=self.model_url, headers={"User-Agent": "curl/7.81.0"})
-        last = ""
+        last = [""]
         def reporthook(blocknum, bs, size):
           n = "\r%.01f%%" % (100.*float(blocknum*bs)/float(size))
-          if n != last:
+          if n != last[0]:
             sys.stderr.write(n)
-            last = n
+            last[0] = n
           sys.stderr.flush()
-        _urlretrieve(req, self.filename, reporthook=reporthook)
-        sys.stderr.write("\n")
+        self.filename, _ = _urlretrieve(req, self.filename, reporthook=reporthook)
+        sys.stderr.write("\rDownloaded %s\n" % self.filename)
         sys.stderr.flush()
         return self.filename
 
@@ -140,7 +141,7 @@ class Model(object):
 
     def to_pipe(self):
         """Returns a loaded ML pipeline."""
-        assert self.type == "checkpoint"
+        # TODO(maruel): Implement LoRA assert self.type == "checkpoint"
         model_path = self.convert()
         if self.clip_skip > 1:
             pipe = diffusers.DiffusionPipeline.from_pretrained(
@@ -219,13 +220,19 @@ def get_prompt_embeddings(pipe, prompt, negative_prompt, split_character=","):
 
 def _urlretrieve(req, filename, reporthook=None):
   """Simpler urlretrieve() that enables specifying a request object instead of
-  an URL.
+  an URL, and leverages content-disposition.
   """
   with contextlib.closing(urllib.request.urlopen(req)) as fp:
       headers = fp.info()
       #size = int(headers["content-length"]) if "content-length" in headers else -1
       size = int(headers.get("content-length", -1))
-      #ct = headers.get("content-disposition"):
+      ct = headers.get("content-disposition")
+      if not filename:
+        if not ct:
+          raise urllib.request.URLError(
+              "filename not specified and content-disposition header not present")
+        cdisp, pdict = cgi.parse_header(ct)
+        filename = pdict['filename']
       bs = 1024*8
       read = 0
       blocknum = 0
@@ -243,7 +250,7 @@ def _urlretrieve(req, filename, reporthook=None):
               if reporthook:
                 reporthook(blocknum, bs, size)
   if size >= 0 and read < size:
-      raise ContentTooShortError(
+      raise urllib.request.ContentTooShortError(
           "retrieval incomplete: got only %i out of %i bytes"
           % (read, size), result)
   return result
