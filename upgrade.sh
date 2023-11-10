@@ -62,15 +62,34 @@ cuda() {
   pip3 install --upgrade jupyterlab-nvdashboard
 }
 
+# Manually upgrade dependencies that are known to have security issues.
+security() {
+  pip install --upgrade \
+    IPython \
+    Werkzeug \
+    aiohttp \
+    certifi \
+    cryptography \
+    grpcio \
+    markdown-it-py \
+    pygments \
+    requests \
+    starlette \
+    tornado \
+    urllib3
+}
+
 pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   diffusion
+  security
 else
   diffusion
   general
   jupyter
   tensorflow
   #cuda
+  security
 fi
 
 pip3 freeze > requirements.txt
