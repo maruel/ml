@@ -3,6 +3,7 @@
 /etc
 /lib
 /lib64
+/notebooks/.virtual_documents
 /notebooks/kaggle
 /notebooks/logdir
 /notebooks/**/.ipynb_checkpoints
