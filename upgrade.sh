@@ -70,7 +70,7 @@ else
   general
   jupyter
   tensorflow
-  cuda
+  #cuda
 fi
 
 pip3 freeze > requirements.txt
