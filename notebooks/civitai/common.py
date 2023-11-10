@@ -205,16 +205,27 @@ class CivitaiLoRAModel(CivitaiModel):
         dump_path = os.path.splitext(filename)[0]
         if not os.path.isdir(dump_path):
           print("Converting", filename)
+          pipe = diffusers.StableDiffusionPipeline.from_pretrained(self.base_model, torch_dtype=torch.float32)
+          diffusers.loaders.LoraLoaderMixin.unload_lora_weights
           # See
           # https://github.com/huggingface/diffusers/blob/main/scripts/convert_lora_safetensor_to_diffusers.py
           #checkpoint_path = args.checkpoint_path
-          pipe = self._convert(self.base_model, filename, "lora_unet", "lora_te", 0.75)
+          #pipe = self._convert(self.base_model, filename, "lora_unet", "lora_te", 0.75)
           #pipe = pipe.to(device)
           pipe.save_pretrained(dump_path, safe_serialization=True)
         return dump_path
 
     @staticmethod
     def _convert(base_model_path, checkpoint_path, lora_prefix_unet, lora_prefix_text_encoder, alpha):
+        """This code seems concerning.
+
+        Maybe?
+        https://github.com/harrywang/finetune-sd/blob/main/convert-to-safetensors.py
+        https://blog.openvino.ai/blog-posts/enable-lora-weights-with-stable-diffusion-controlnet-pipeline
+        """
+        # diffusers.loaders.UNet2DConditionLoadersMixin.load_attn_procs
+        # diffusers.loaders.LoraLoaderMixin.unload_lora_weights
+
         pipe = diffusers.StableDiffusionPipeline.from_pretrained(base_model_path, torch_dtype=torch.float32)
         # Load LoRA weight from .safetensors
         state_dict = safetensors.torch.load_file(checkpoint_path)
