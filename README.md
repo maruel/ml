@@ -58,3 +58,10 @@ https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&D
 sudo apt install cuda-11-8 libcudnn8 tensorrt-libs
 python3 -c "import tensorflow as tf;print(tf.config.list_physical_devices('GPU'))"
 ```
+
+
+## Random notes
+
+https://huggingface.co/blog/lcm_lora
+https://github.com/huggingface/diffusers/blob/main/examples/consistency_distillation/README_sdxl.md
+https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/LCM-LoRA-Technical-Report.pdf
