@@ -62,9 +62,21 @@ cuda() {
   pip3 install --upgrade jupyterlab-nvdashboard
 }
 
+lint() {
+  # failed to install: rope_completion, rope_rename
+  pip3 install --upgrade \
+    autopep8 \
+    mccabe \
+    pycodestyle \
+    pydocstyle \
+    pyflakes \
+    pylint \
+    yapf
+}
+
 # Manually upgrade dependencies that are known to have security issues.
 security() {
-  pip install --upgrade \
+  pip3 install --upgrade \
     IPython \
     Werkzeug \
     aiohttp \
@@ -82,11 +94,13 @@ security() {
 pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   diffusion
+  lint
   security
 else
   diffusion
   general
   jupyter
+  lint
   tensorflow
   #cuda
   security
