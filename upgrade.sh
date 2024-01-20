@@ -66,6 +66,11 @@ tensorflow() {
     tensorflow_datasets
 }
 
+intel() {
+  echo "Installing Intel extension"
+  pip3 install --upgrade intel-extension-for-pytorch
+}
+
 cuda() {
   echo "Installing nvidia/CUDA packages"
   # TODO(maruel): Currently incompatible with jupyterlab 4.
@@ -113,6 +118,7 @@ else
   jupyter
   lint
   tensorflow
+  intel
   #cuda
   security
 fi
