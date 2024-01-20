@@ -1,9 +1,10 @@
 # Machine Learning toolkit
 
 Includes:
-- [Stable Diffusion
-  v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1) notebooks
-  ([txt2img, depth2img](notebooks/stable_diffusion))
+- Notebooks for [Stable Diffusion
+  v2.1](https://huggingface.co/stabilityai/stable-diffusion-2-1) and [Stable LM
+  2 1.6B](https://stability.ai/news/introducing-stable-lm-2) including
+  ([txt2img, depth2img, stablelm](notebooks/stable_diffusion)).
 - General examples in [notebooks/learning](notebooks/learning)
 - Deepdream notebooks and scripts.
   [DeepDream](https://en.wikipedia.org/wiki/DeepDream) was really hot a few
