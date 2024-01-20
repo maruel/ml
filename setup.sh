@@ -9,8 +9,9 @@ cd "$(dirname $0)"
 UNAME=$(uname)
 
 if [ "$UNAME" = "Darwin" ]; then
-  # Do stuff
   HAS_NVIDIA=0
+  # TODO(maruel): If using stock python, ask the user to install a recent
+  # version.
 else
   # I think gcc is required but not sure. I had it preinstalled for other reasons.
   # If you face challenges, install with: sudo apt install gcc
@@ -30,13 +31,11 @@ if [ ! -f bin/activate ]; then
   # PATH="$PATH:$HOME/.local/bin"
   # pip install virtualenv
   if which virtualenv > /dev/null; then
-    virtualenv .
+    virtualenv venv
   else
-    python3 -m venv .
+    python3 -m venv venv
   fi
 fi
-
-source bin/activate
 
 # Ubuntu users may have to:
 #   sudo apt install build-essential libssl-dev python3-dev

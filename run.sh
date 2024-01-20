@@ -5,8 +5,7 @@
 
 set -eu
 cd "$(dirname $0)"
-
-source bin/activate
+source venv/bin/activate
 
 UNAME=$(uname)
 

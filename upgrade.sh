@@ -4,8 +4,12 @@
 # that can be found in the LICENSE file.
 
 set -eu
-
-source bin/activate
+cd "$(dirname $0)"
+if [ ! -f venv/bin/activate ]; then
+  echo "Run ./setup.sh first"
+  exit 1
+fi
+source venv/bin/activate
 
 UNAME=$(uname)
 
@@ -20,7 +24,11 @@ diffusion() {
     torch \
     torchvision \
     transformers
-    #xformers
+
+  # Work around "ModuleNotFoundError: No module named 'torch'"
+  # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
+  pip3 install --upgrade wheel
+  pip3 install --upgrade --no-dependencies xformers
 
   # https://github.com/JamesQFreeman/LoRA-ViT
   #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
