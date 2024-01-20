@@ -15,6 +15,7 @@ diffusion() {
     accelerate \
     diffusers \
     numpy \
+    tiktoken \
     omegaconf \
     torch \
     torchvision \
@@ -95,6 +96,7 @@ security() {
 pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   diffusion
+  jupyter
   lint
   security
 else
