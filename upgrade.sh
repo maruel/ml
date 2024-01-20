@@ -14,11 +14,12 @@ diffusion() {
   pip3 install --upgrade \
     accelerate \
     diffusers \
+    numpy \
     omegaconf \
     torch \
     torchvision \
-    transformers \
-    xformers
+    transformers
+    #xformers
 
   # https://github.com/JamesQFreeman/LoRA-ViT
   #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
@@ -106,4 +107,4 @@ else
   security
 fi
 
-pip3 freeze > requirements.txt
+pip3 freeze > "requirements-$(uname).txt"
