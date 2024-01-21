@@ -31,6 +31,7 @@ Includes:
 ### Ubuntu 22.04
 
 1. Install CUDA from https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
+    - You don't have to register.
 1. You can install then confirm it runs:
     ```
     sudo apt install cuda-11-8 libcudnn8 tensorrt-libs
@@ -60,10 +61,12 @@ nvidia-smi | grep 'python' | awk '{ print $5 }' | xargs -n1 kill
 
 ### Windows 11
 
-1. Get python3.11 https://www.python.org/downloads/ (or the Microsoft Store?) until https://github.com/pytorch/pytorch/issues/110436 is fixed.
-   - Remove *App execution aliases* for python, https://stackoverflow.com/a/65520328/1939810 if not using the Microsoft Store.
-   - Check add Python to PATH.
-1. Get CUDA from https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html
+1. Get python3.11 from the Microsoft Store until
+   https://github.com/pytorch/pytorch/issues/110436 is fixed and it becomes
+   compatible with 3.12.
+1. Get CUDA from
+   https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_network
+    - You don't have to register.
 
 
 ## Random notes
