@@ -11,13 +11,6 @@ Includes:
   years back.
 
 
-## Local
-
-- To get started, run `./setup.sh`
-- To start the server, run `./run.sh`
-- Tested on Ubuntu 22.04 with a Nvidia RTX 2060. Works great remotely via a Chromebook!
-
-
 ## Google Colab
 
 - Visit https://colab.research.google.com/ or directly load one of the
@@ -33,7 +26,22 @@ Includes:
 - Run the second cell to generate stuff.
 
 
-## Perf
+## Local
+
+### Ubuntu 22.04
+
+1. Install CUDA from https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
+1. You can install then confirm it runs:
+    ```
+    sudo apt install cuda-11-8 libcudnn8 tensorrt-libs
+    python3 -c "import tensorflow as tf;print(tf.config.list_physical_devices('GPU'))"
+    ```
+1. Run `./setup.sh` to create the virtual environment and install pip packages
+1. To start the server, run `./run.sh`
+1. Tested on Ubuntu 22.04 with a Nvidia RTX 2060. Works great remotely via a Chromebook!
+
+
+### Perf
 
 List memory usage: `nvidia-smi`
 
@@ -50,15 +58,12 @@ VRAM allocations. Kill with:
 nvidia-smi | grep 'python' | awk '{ print $5 }' | xargs -n1 kill
 ```
 
-## Cuda
+### Windows 11
 
-Ubuntu 22.04:
-https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
-
-```
-sudo apt install cuda-11-8 libcudnn8 tensorrt-libs
-python3 -c "import tensorflow as tf;print(tf.config.list_physical_devices('GPU'))"
-```
+1. Get python3.11 https://www.python.org/downloads/ (or the Microsoft Store?) until https://github.com/pytorch/pytorch/issues/110436 is fixed.
+   - Remove *App execution aliases* for python, https://stackoverflow.com/a/65520328/1939810 if not using the Microsoft Store.
+   - Check add Python to PATH.
+1. Get CUDA from https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html
 
 
 ## Random notes

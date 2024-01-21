@@ -5,21 +5,24 @@
 
 call venv\Scripts\activate.bat
 
+echo Installing base tools
+python -m pip install --upgrade pip
+:: Work around "ModuleNotFoundError: No module named 'torch'"
+:: https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
+pip3 install --upgrade setuptools wheel
+
 echo Installing stable diffusion packages
 pip3 install --upgrade ^
     accelerate ^
     diffusers ^
     numpy ^
     tiktoken ^
-    omegaconf ^
     torch ^
     torchvision ^
+    omegaconf ^
     transformers
 
 
-:: Work around "ModuleNotFoundError: No module named 'torch'"
-:: https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
-pip3 install --upgrade wheel
 pip3 install --upgrade --no-dependencies xformers
 
 :: https://github.com/JamesQFreeman/LoRA-ViT
@@ -51,8 +54,11 @@ pip3 install --upgrade ^
     tensorflow ^
     tensorflow_datasets
 
-echo Installing Intel extension
-pip3 install --upgrade intel-extension-for-pytorch
+::echo Installing Intel extension
+:: This version doesn't work on Windows, only on WSL2. (!!)
+::pip3 install --upgrade intel-extension-for-pytorch
+:: If you have an Intel Arc video card. Untested. This version does work on Windows. (!!)
+:: pip3 install --upgrade intel-extension-for-pytorch==2.1.10 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
 
 echo Installing nvidia/CUDA packages
 :: TODO(maruel): Currently incompatible with jupyterlab 4.
