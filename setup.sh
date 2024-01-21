@@ -24,7 +24,7 @@ else
   fi
 fi
 
-if [ ! -f bin/activate ]; then
+if [ ! -f venv/bin/activate ]; then
   echo "Setting up virtualenv"
   # On clean ubuntu, pip and venv are not installed. What I personally do is:
   # wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user
