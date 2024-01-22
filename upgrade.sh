@@ -15,6 +15,10 @@ UNAME=$(uname)
 
 diffusion() {
   echo "Installing stable diffusion packages"
+  # Work around "ModuleNotFoundError: No module named 'torch'"
+  # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
+  pip3 install --upgrade wheel
+
   pip3 install --upgrade \
     accelerate \
     diffusers \
@@ -27,12 +31,9 @@ diffusion() {
     transformers
 
   # Qwen
-  pip3 install --upgrade \
-    deepspeed einops flash-attn transformers_stream_generator
+  #pip3 install --upgrade \
+  #  deepspeed einops flash-attn transformers_stream_generator
 
-  # Work around "ModuleNotFoundError: No module named 'torch'"
-  # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
-  pip3 install --upgrade wheel
   pip3 install --upgrade --no-dependencies xformers
 
   # https://github.com/JamesQFreeman/LoRA-ViT
