@@ -26,6 +26,10 @@ diffusion() {
     torchvision \
     transformers
 
+  # Qwen
+  pip3 install --upgrade \
+    deepspeed einops flash-attn transformers_stream_generator
+
   # Work around "ModuleNotFoundError: No module named 'torch'"
   # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
   pip3 install --upgrade wheel
