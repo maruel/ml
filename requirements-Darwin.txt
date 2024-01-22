@@ -89,6 +89,7 @@ overrides==7.5.0
 packaging==23.2
 pandocfilters==1.5.1
 parso==0.7.1
+peft==0.7.1
 pexpect==4.9.0
 pillow==10.2.0
 platformdirs==4.1.0

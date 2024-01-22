@@ -19,8 +19,9 @@ diffusion() {
     accelerate \
     diffusers \
     numpy \
-    tiktoken \
     omegaconf \
+    peft \
+    tiktoken \
     torch \
     torchvision \
     transformers
