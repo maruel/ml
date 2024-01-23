@@ -27,6 +27,8 @@ pip3 install --upgrade ^
 
 pip3 install --upgrade --no-dependencies xformers
 
+pip3 install --upgrade einops
+
 :: https://github.com/JamesQFreeman/LoRA-ViT
 :: pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
 :: pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
