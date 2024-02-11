@@ -21,6 +21,7 @@ diffusion() {
 
   pip3 install --upgrade \
     accelerate \
+    compel \
     diffusers \
     numpy \
     omegaconf \
@@ -38,7 +39,7 @@ diffusion() {
 
   # https://github.com/JamesQFreeman/LoRA-ViT
   #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
-  pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
+  #pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
 }
 
 general() {
