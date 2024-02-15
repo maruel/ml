@@ -60,6 +60,7 @@ jupyter() {
     jupyterlab \
     jupyterlab-lsp \
     matplotlib \
+    pyls \
     python-language-server
 }
 
