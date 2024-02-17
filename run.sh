@@ -10,7 +10,7 @@ source venv/bin/activate
 UNAME=$(uname)
 
 if [ "$UNAME" = "Linux" ]; then
-  if which > nvidia-smi > /dev/null; then
+  if which nvidia-smi > /dev/null; then
     OLD_PIDS="$(nvidia-smi | grep python3 | awk '{ print $5 }')"
     if [ "$OLD_PIDS" != "" ]; then
       echo "Killing stale python processes"
