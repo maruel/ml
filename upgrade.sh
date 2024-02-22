@@ -13,6 +13,7 @@ source venv/bin/activate
 
 UNAME=$(uname)
 
+
 diffusion() {
   echo "Installing stable diffusion packages"
   # Work around "ModuleNotFoundError: No module named 'torch'"
@@ -23,7 +24,6 @@ diffusion() {
     accelerate \
     compel \
     diffusers \
-    numpy \
     omegaconf \
     peft \
     tiktoken \
@@ -47,6 +47,9 @@ general() {
   pip3 install --upgrade \
     Pillow \
     ftfy \
+    immutabledict \
+    numpy \
+    sentencepiece \
     scipy
   #  triton
 }
@@ -66,12 +69,21 @@ jupyter() {
 
 tensorflow() {
   echo "Installing tensorflow packages"
+  # datasets is not really needed, was used when I was doing tutorials.
   pip3 install --upgrade \
     kaggle \
     pycocotools \
     tensorboard_plugin_profile \
     tensorflow \
     tensorflow_datasets
+
+  pip3 install --upgrade \
+    jax
+  # tensorflow depends on keras 2. Duh. So we need to install keras after.
+  pip3 install --upgrade \
+    keras \
+    keras-nlp \
+
 }
 
 intel() {
@@ -119,6 +131,7 @@ if [ "$UNAME" = "Darwin" ]; then
   diffusion
   jupyter
   lint
+  general
   security
 else
   diffusion
