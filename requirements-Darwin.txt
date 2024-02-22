@@ -1,4 +1,4 @@
-accelerate==0.27.0
+accelerate==0.27.2
 aiohttp==3.9.3
 aiosignal==1.3.1
 antlr4-python3-runtime==4.9.3
@@ -21,12 +21,12 @@ charset-normalizer==3.3.2
 comm==0.2.1
 compel==2.0.2
 contourpy==1.2.0
-cryptography==42.0.2
+cryptography==42.0.4
 cycler==0.12.1
 debugpy==1.8.0
 decorator==5.1.1
 defusedxml==0.7.1
-diffusers==0.26.2
+diffusers==0.26.3
 dill==0.3.7
 executing==2.0.1
 fastjsonschema==2.19.1
@@ -35,7 +35,7 @@ fonttools==4.47.2
 fqdn==1.5.1
 frozenlist==1.4.1
 fsspec==2023.12.2
-grpcio==1.60.1
+grpcio==1.62.0
 h11==0.14.0
 httpcore==1.0.2
 httpx==0.26.0
@@ -45,7 +45,7 @@ importlib-metadata==7.0.1
 ipykernel==6.29.0
 ipympl==0.9.3
 ipyplot==1.1.2
-ipython==8.21.0
+ipython==8.22.1
 ipython-genutils==0.2.0
 ipywidgets==8.1.1
 isoduration==20.11.0
@@ -64,7 +64,7 @@ jupyter_client==8.6.0
 jupyter_core==5.7.1
 jupyter_server==2.12.5
 jupyter_server_terminals==0.5.1
-jupyterlab==4.1.0
+jupyterlab==4.1.2
 jupyterlab-lsp==5.0.3
 jupyterlab-widgets==3.0.9
 jupyterlab_pygments==0.3.0
@@ -72,7 +72,7 @@ jupyterlab_server==2.25.2
 kiwisolver==1.4.5
 markdown-it-py==3.0.0
 MarkupSafe==2.1.4
-matplotlib==3.8.2
+matplotlib==3.8.3
 matplotlib-inline==0.1.6
 mccabe==0.7.0
 mdurl==0.1.2
@@ -84,7 +84,7 @@ nbconvert==7.14.2
 nbformat==5.9.2
 nest-asyncio==1.5.9
 networkx==3.2.1
-notebook==7.0.7
+notebook==7.1.0
 notebook_shim==0.2.3
 numpy==1.26.4
 omegaconf==2.3.0
@@ -108,6 +108,7 @@ pydocstyle==6.3.0
 pyflakes==3.2.0
 Pygments==2.17.2
 pylint==3.0.3
+pyls==0.1.6
 pyparsing==3.1.1
 python-dateutil==2.8.2
 python-json-logger==2.0.7
@@ -131,7 +132,7 @@ sniffio==1.3.0
 snowballstemmer==2.2.0
 soupsieve==2.5
 stack-data==0.6.3
-starlette==0.37.0
+starlette==0.37.1
 sympy==1.12
 terminado==0.18.0
 tiktoken==0.6.0
@@ -139,17 +140,17 @@ tinycss2==1.2.1
 tokenizers==0.15.0
 tomli==2.0.1
 tomlkit==0.12.3
-torch==2.2.0
-torchvision==0.17.0
+torch==2.2.1
+torchvision==0.17.1
 tornado==6.4
 tqdm==4.66.1
 traitlets==5.14.1
-transformers==4.37.2
+transformers==4.38.1
 types-python-dateutil==2.8.19.20240106
 typing_extensions==4.9.0
 ujson==5.9.0
 uri-template==1.3.0
-urllib3==2.2.0
+urllib3==2.2.1
 wcwidth==0.2.13
 webcolors==1.13
 webencodings==0.5.1
