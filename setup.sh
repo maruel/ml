@@ -24,17 +24,27 @@ else
   fi
 fi
 
+if [ ! -f ./python3 ]; then
+  if which python3.11 > /dev/null; then
+    # Currently hardcode at 3.11 because pytorch.
+    PYTHON3="$(which python3.11)"
+    echo "Selected $PYTHON3; $($PYTHON3 --version)"
+  else
+    PYTHON3="$(which python3)"
+    if ! python3 -c "import sys;sys.exit(sys.version_info[0:2]<(3,11))"; then
+      echo "$PYTHON3 is too old; $($PYTHON3 --version)"
+      echo "Try installing python3.11. We'll continue anyway."
+    else
+      echo "Selected $PYTHON3; $($PYTHON3 --version)"
+    fi
+  fi
+  ln -s $PYTHON3 python3
+fi
+
 if [ ! -f venv/bin/activate ]; then
   echo "Setting up virtualenv"
-  # On clean ubuntu, pip and venv are not installed. What I personally do is:
-  # wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user
-  # PATH="$PATH:$HOME/.local/bin"
-  # pip install virtualenv
-  if which virtualenv > /dev/null; then
-    virtualenv venv
-  else
-    python3 -m venv venv
-  fi
+  # Do not use "virtualenv" since it won't use the right python3 version.
+  ./python3 -m venv venv
 fi
 
 # Ubuntu users may have to:
