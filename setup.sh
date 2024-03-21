@@ -12,6 +12,13 @@ if [ "$UNAME" = "Darwin" ]; then
   HAS_NVIDIA=0
   # TODO(maruel): If using stock python, ask the user to install a recent
   # version.
+
+  # Apple's llvm doesn't support -fopenmp.
+  brew install llvm libomp
+  BREW="$(dirname $(dirname $(which brew)))"
+  export PATH="$BREW/opt/llvm/bin:$PATH"
+  export CC="$BREW/opt/llvm/bin/clang"
+  export CXX="$BREW/opt/llvm/bin/clang++"
 else
   # I think gcc is required but not sure. I had it preinstalled for other reasons.
   # If you face challenges, install with: sudo apt install gcc

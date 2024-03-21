@@ -128,6 +128,10 @@ security() {
 
 pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
+  BREW="$(dirname $(dirname $(which brew)))"
+  export PATH="$BREW/opt/llvm/bin:$PATH"
+  export CC="$BREW/opt/llvm/bin/clang"
+  export CXX="$BREW/opt/llvm/bin/clang++"
   diffusion
   jupyter
   lint
