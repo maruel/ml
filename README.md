@@ -71,6 +71,13 @@ nvidia-smi | grep 'python' | awk '{ print $5 }' | xargs -n1 kill
 
 ## Random notes
 
-https://huggingface.co/blog/lcm_lora
-https://github.com/huggingface/diffusers/blob/main/examples/consistency_distillation/README_sdxl.md
-https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/LCM-LoRA-Technical-Report.pdf
+- https://huggingface.co/blog/lcm_lora
+- https://github.com/huggingface/diffusers/blob/main/examples/consistency_distillation/README_sdxl.md
+- https://huggingface.co/latent-consistency/lcm-lora-sdxl/resolve/main/LCM-LoRA-Technical-Report.pdf
+- https://github.com/pgvector/pgvector
+- https://arxiv.org/pdf/2401.08500
+- https://medium.com/@rohanbalkondekar/flow-engineering-is-all-you-need-9046a5e7351d
+- https://github.com/LyzrCore/lyzr-experimental-automata
+- https://research.google/pubs/hypernetworks-2/
+- https://github.com/JiauZhang/hyperdreambooth
+- https://medium.com/@jain.sm/hyperdreambooth-a-novel-approach-to-text-to-image-personalization-71b7fe8be42a

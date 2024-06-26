@@ -75,6 +75,7 @@ tensorflow() {
     pycocotools \
     tensorboard_plugin_profile \
     tensorflow \
+    tensorflow-text \
     tensorflow_datasets
 
   pip3 install --upgrade \
@@ -126,6 +127,12 @@ security() {
     urllib3
 }
 
+openinterpreter() {
+  pip install --upgrade \
+    open-interpreter \
+    opencv-python
+}
+
 pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   BREW="$(dirname $(dirname $(which brew)))"
@@ -146,6 +153,7 @@ else
   intel
   #cuda
   security
+  openinterpreter
 fi
 
 pip3 freeze > "requirements-$(uname).txt"
