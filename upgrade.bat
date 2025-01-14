@@ -2,6 +2,7 @@
 :: Copyright 2024 Marc-Antoine Ruel. All rights reserved.
 :: Use of this source code is governed under the Apache License, Version 2.0
 :: that can be found in the LICENSE file.
+setlocal enableextensions
 
 call venv\Scripts\activate.bat
 
@@ -16,33 +17,32 @@ echo Installing pytorch with nvidia/CUDA packages
 ::pip3 install nvidia-cuda-runtime-cu12
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-echo Installing stable diffusion packages
-pip3 install --upgrade ^
-    accelerate ^
+::echo Installing xformers without dependencies
+::pip3 install --upgrade --no-dependencies xformers
+
+::echo Installing stable diffusion packages
+set PACKAGES=accelerate ^
     diffusers ^
+    einops ^
     numpy ^
-    peft ^
-    tiktoken ^
     omegaconf ^
+    peft ^
+    sentencepiece ^
+    tiktoken ^
     transformers
-
-pip3 install --upgrade --no-dependencies xformers
-
-pip3 install --upgrade einops
 
 :: https://github.com/JamesQFreeman/LoRA-ViT
 :: pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
 :: pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
 
-echo Installing general packages
-pip3 install --upgrade ^
+::echo Installing general packages
+set PACKAGES=%PACKAGES% ^
     Pillow ^
     ftfy ^
     scipy
-::  triton
 
-echo Installing jupyter packages
-pip3 install --upgrade ^
+::echo Installing jupyter packages
+set PACKAGES=%PACKAGES% ^
     ipyplot ^
     ipympl ^
     jupyter ^
@@ -84,8 +84,8 @@ pip3 install --upgrade ^
 ::    yapf
 
 :: Manually upgrade dependencies that are known to have security issues.
-echo Security updates
-pip3 install --upgrade ^
+::echo Security updates
+set PACKAGES=%PACKAGES% ^
     IPython ^
     Werkzeug ^
     aiohttp ^
@@ -100,5 +100,7 @@ pip3 install --upgrade ^
     starlette ^
     tornado ^
     urllib3
+
+pip3 install --upgrade %PACKAGES%
 
 pip3 freeze > "requirements-Windows.txt"

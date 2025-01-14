@@ -102,14 +102,14 @@ nest-asyncio==1.6.0
 networkx==3.2.1
 notebook==7.3.2
 notebook_shim==0.2.4
-numpy==2.0.2
+numpy==2.2.1
 omegaconf==2.3.0
 opt_einsum==3.4.0
 optree==0.13.1
 overrides==7.7.0
 packaging==24.2
 pandocfilters==1.5.1
-parso==0.8.4
+parso==0.7.1
 peft==0.14.0
 pillow==11.1.0
 platformdirs==4.3.6
@@ -146,6 +146,7 @@ rpds-py==0.22.3
 safetensors==0.5.2
 scipy==1.15.1
 Send2Trash==1.8.3
+sentencepiece==0.2.0
 setuptools==75.8.0
 shortuuid==1.0.13
 simple-parsing==0.1.6
