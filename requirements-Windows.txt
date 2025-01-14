@@ -109,7 +109,8 @@ optree==0.13.1
 overrides==7.7.0
 packaging==24.2
 pandocfilters==1.5.1
-parso==0.7.1
+parso==0.8.4
+peft==0.14.0
 pillow==11.1.0
 platformdirs==4.3.6
 pluggy==1.5.0
@@ -124,6 +125,7 @@ pyarrow==18.1.0
 pycocotools==2.0.8
 pycparser==2.22
 Pygments==2.19.1
+pyls==0.1.6
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 python-json-logger==3.2.1

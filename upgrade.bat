@@ -21,6 +21,7 @@ pip3 install --upgrade ^
     accelerate ^
     diffusers ^
     numpy ^
+    peft ^
     tiktoken ^
     omegaconf ^
     transformers
@@ -50,13 +51,13 @@ pip3 install --upgrade ^
     matplotlib ^
     python-language-server
 
-echo Installing tensorflow packages
-pip3 install --upgrade ^
-    kaggle ^
-    pycocotools ^
-    tensorboard_plugin_profile ^
-    tensorflow ^
-    tensorflow_datasets
+::echo Installing tensorflow packages
+::pip3 install --upgrade ^
+::    kaggle ^
+::    pycocotools ^
+::    tensorboard_plugin_profile ^
+::    tensorflow ^
+::    tensorflow_datasets
 
 ::echo Installing Intel extension
 :: This version doesn't work on Windows, only on WSL2. (!!)
@@ -92,6 +93,8 @@ pip3 install --upgrade ^
     cryptography ^
     grpcio ^
     markdown-it-py ^
+    parso ^
+    pyls ^
     pygments ^
     requests ^
     starlette ^
