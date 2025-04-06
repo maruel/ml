@@ -30,6 +30,12 @@ export HF_HOME=$PWD/cache/huggingface
 export TF_CPP_MIN_LOG_LEVEL=2
 # https://www.tensorflow.org/guide/gpu#limiting_gpu_memory_growth
 export TF_FORCE_GPU_ALLOW_GROWTH=true
+
+# Override Jupyter directories to not use ~/.jupyter and ~/.local/share/jupyter
+export JUPYTER_CONFIG_DIR=$PWD/config
+export JUPYTER_DATA_DIR=$PWD/data
+export JUPYTER_RUNTIME_DIR=$PWD/runtime
+
 # --watch ?
 # --autoreload ?
-jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir notebooks
+jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir "$PWD/notebooks"
