@@ -63,6 +63,7 @@ general() {
 
 jupyter() {
   echo "- Installing jupyter packages"
+  # See https://jupyter-ai.readthedocs.io/en/latest/users/index.html#model-providers
   pip3 install --upgrade \
     ipyplot \
     ipympl \
@@ -70,6 +71,9 @@ jupyter() {
     jupyterlab \
     jupyter-ai \
     jupyterlab-lsp \
+    langchain-anthropic \
+    langchain-google-genai \
+    langchain-ollama \
     matplotlib \
     notebook \
     python-lsp-server
