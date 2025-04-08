@@ -61,6 +61,7 @@ jupyter() {
     ipympl \
     jupyter \
     jupyterlab \
+    jupyter-ai \
     jupyterlab-lsp \
     matplotlib \
     pyls \
@@ -149,11 +150,15 @@ else
   general
   jupyter
   lint
-  tensorflow
+  # tensorflow
   intel
-  #cuda
   security
   openinterpreter
+  if ! lspci | grep -i nvidia > /dev/null; then
+	echo "no cuda found"
+  else
+	cuda
+  fi
 fi
 
 pip3 freeze > "requirements-$(uname).txt"
