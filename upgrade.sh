@@ -15,27 +15,33 @@ UNAME=$(uname)
 
 
 diffusion() {
-  echo "Installing stable diffusion packages"
+  echo "- Installing wheel"
   # Work around "ModuleNotFoundError: No module named 'torch'"
   # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
   pip3 install --upgrade wheel
+  echo ""
 
+  echo "- Installing stable diffusion packages"
   pip3 install --upgrade \
     accelerate \
     compel \
     diffusers \
     omegaconf \
     peft \
+	starlette \
     tiktoken \
     torch \
     torchvision \
     transformers
+  echo ""
 
   # Qwen
   #pip3 install --upgrade \
   #  deepspeed einops flash-attn transformers_stream_generator
 
+  echo "- Installing xformers"
   pip3 install --upgrade --no-dependencies xformers
+  echo ""
 
   # https://github.com/JamesQFreeman/LoRA-ViT
   #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
@@ -43,7 +49,7 @@ diffusion() {
 }
 
 general() {
-  echo "Installing general packages"
+  echo "- Installing general packages"
   pip3 install --upgrade \
     Pillow \
     ftfy \
@@ -52,10 +58,11 @@ general() {
     sentencepiece \
     scipy
   #  triton
+  echo ""
 }
 
 jupyter() {
-  echo "Installing jupyter packages"
+  echo "- Installing jupyter packages"
   pip3 install --upgrade \
     ipyplot \
     ipympl \
@@ -64,12 +71,14 @@ jupyter() {
     jupyter-ai \
     jupyterlab-lsp \
     matplotlib \
+    notebook \
     pyls \
     python-language-server
+  echo ""
 }
 
 tensorflow() {
-  echo "Installing tensorflow packages"
+  echo "- Installing tensorflow packages"
   # datasets is not really needed, was used when I was doing tutorials.
   pip3 install --upgrade \
     kaggle \
@@ -85,21 +94,24 @@ tensorflow() {
   pip3 install --upgrade \
     keras \
     keras-nlp \
-
+  echo ""
 }
 
 intel() {
-  echo "Installing Intel extension"
+  echo "- Installing Intel extension"
   pip3 install --upgrade intel-extension-for-pytorch
+  echo ""
 }
 
 cuda() {
-  echo "Installing nvidia/CUDA packages"
+  echo "- Installing nvidia/CUDA packages"
   # TODO(maruel): Currently incompatible with jupyterlab 4.
   pip3 install --upgrade jupyterlab-nvdashboard
+  echo ""
 }
 
 lint() {
+  echo "- Installing linters"
   # failed to install: rope_completion, rope_rename
   pip3 install --upgrade \
     autopep8 \
@@ -109,10 +121,12 @@ lint() {
     pyflakes \
     pylint \
     yapf
+  echo ""
 }
 
 # Manually upgrade dependencies that are known to have security issues.
 security() {
+  echo "- Installing security updates"
   pip3 install --upgrade \
     IPython \
     Werkzeug \
@@ -126,12 +140,14 @@ security() {
     starlette \
     tornado \
     urllib3
+  echo ""
 }
 
 openinterpreter() {
   pip install --upgrade \
     open-interpreter \
     opencv-python
+  echo ""
 }
 
 pip3 install --upgrade pip
@@ -144,7 +160,7 @@ if [ "$UNAME" = "Darwin" ]; then
   jupyter
   lint
   general
-  security
+  # security
 else
   diffusion
   general
@@ -152,13 +168,14 @@ else
   lint
   # tensorflow
   intel
-  security
-  openinterpreter
+  # openinterpreter
   if ! lspci | grep -i nvidia > /dev/null; then
-	echo "no cuda found"
+	echo "- no cuda found"
   else
 	cuda
   fi
+  # security
 fi
 
+echo "- Updating requirements-$(uname).txt"
 pip3 freeze > "requirements-$(uname).txt"

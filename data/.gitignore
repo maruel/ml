@@ -1,2 +1,3 @@
-*.db
-notebook_secret
+/*.db
+/jupyter_ai/
+/notebook_secret
