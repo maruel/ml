@@ -72,8 +72,7 @@ jupyter() {
     jupyterlab-lsp \
     matplotlib \
     notebook \
-    pyls \
-    python-language-server
+    python-lsp-server
   echo ""
 }
 
