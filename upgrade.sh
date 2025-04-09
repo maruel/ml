@@ -39,9 +39,11 @@ diffusion() {
   #pip3 install --upgrade \
   #  deepspeed einops flash-attn transformers_stream_generator
 
-  echo "- Installing xformers"
-  pip3 install --upgrade --no-dependencies xformers
-  echo ""
+  if [ "$UNAME" = "Linux" ]; then
+    echo "- Installing xformers"
+    pip3 install --upgrade --no-dependencies xformers
+    echo ""
+  fi
 
   # https://github.com/JamesQFreeman/LoRA-ViT
   #pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
@@ -160,9 +162,9 @@ if [ "$UNAME" = "Darwin" ]; then
   export CC="$BREW/opt/llvm/bin/clang"
   export CXX="$BREW/opt/llvm/bin/clang++"
   diffusion
+  general
   jupyter
   lint
-  general
   # security
 else
   diffusion
