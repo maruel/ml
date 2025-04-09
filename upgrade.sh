@@ -14,18 +14,63 @@ source venv/bin/activate
 UNAME=$(uname)
 
 
-prerequisites() {
-  echo "- Installing wheel"
-  # Work around "ModuleNotFoundError: No module named 'torch'"
-  # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
-  pip3 install --upgrade wheel
+general() {
+  echo "- Updating pip"
+  pip3 install --upgrade pip
   echo ""
 
-  # Work around error when installing sgmllib3k on macOS.
-  echo "- Installing setuptools"
-  pip3 install --upgrade setuptools
+  echo "- Installing setuptools and wheel"
+  # Work around:
+  # - "ModuleNotFoundError: No module named 'torch'"
+  #   https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
+  # - error when installing sgmllib3k on macOS.
+  pip3 install --upgrade setuptools wheel
+  echo ""
+
+  echo "- Installing general packages"
+  pip3 install --upgrade \
+    Pillow \
+    ftfy \
+    immutabledict \
+    numpy \
+    sentencepiece \
+    scipy
+  #  triton
   echo ""
 }
+
+
+torch() {
+  echo "- Installing pytorch"
+  pip3 install --upgrade \
+    torch \
+    torchvision
+  echo ""
+}
+
+
+jupyter() {
+  echo "- Installing jupyter packages"
+  # See:
+  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#model-providers
+  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#learning-arxiv-files
+  pip3 install --upgrade \
+    arxiv \
+    ipyplot \
+    ipympl \
+    jupyter \
+    jupyterlab \
+    jupyter-ai \
+    jupyterlab-lsp \
+    langchain-anthropic \
+    langchain-google-genai \
+    langchain-ollama \
+    matplotlib \
+    notebook \
+    python-lsp-server
+  echo ""
+}
+
 
 diffusion() {
   echo "- Installing stable diffusion packages"
@@ -35,10 +80,8 @@ diffusion() {
     diffusers \
     omegaconf \
     peft \
-	starlette \
+    starlette \
     tiktoken \
-    torch \
-    torchvision \
     transformers
   echo ""
 
@@ -57,40 +100,6 @@ diffusion() {
   #pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
 }
 
-general() {
-  echo "- Installing general packages"
-  pip3 install --upgrade \
-    Pillow \
-    ftfy \
-    immutabledict \
-    numpy \
-    sentencepiece \
-    scipy
-  #  triton
-  echo ""
-}
-
-jupyter() {
-  echo "- Installing jupyter packages"
-  # See:
-  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#model-providers
-  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#learning-arxiv-files
-  pip3 install --upgrade \
-	arxiv \
-    ipyplot \
-    ipympl \
-    jupyter \
-    jupyterlab \
-    jupyter-ai \
-    jupyterlab-lsp \
-    langchain-anthropic \
-    langchain-google-genai \
-    langchain-ollama \
-    matplotlib \
-    notebook \
-    python-lsp-server
-  echo ""
-}
 
 tensorflow() {
   echo "- Installing tensorflow packages"
@@ -112,11 +121,13 @@ tensorflow() {
   echo ""
 }
 
+
 intel() {
   echo "- Installing Intel extension"
   pip3 install --upgrade intel-extension-for-pytorch
   echo ""
 }
+
 
 cuda() {
   echo "- Installing nvidia/CUDA packages"
@@ -165,31 +176,30 @@ openinterpreter() {
   echo ""
 }
 
-pip3 install --upgrade pip
 if [ "$UNAME" = "Darwin" ]; then
   BREW="$(dirname $(dirname $(which brew)))"
   export PATH="$BREW/opt/llvm/bin:$PATH"
   export CC="$BREW/opt/llvm/bin/clang"
   export CXX="$BREW/opt/llvm/bin/clang++"
-  prerequisites
-  diffusion
   general
+  torch
+  diffusion
   jupyter
   lint
   # security
 else
-  prerequisites
-  diffusion
   general
+  torch
+  diffusion
   jupyter
   lint
   # tensorflow
   intel
   # openinterpreter
   if ! lspci | grep -i nvidia > /dev/null; then
-	echo "- no cuda found"
+    echo "- no cuda found"
   else
-	cuda
+    cuda
   fi
   # security
 fi

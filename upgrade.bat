@@ -6,13 +6,20 @@ setlocal enableextensions
 
 call venv\Scripts\activate.bat
 
-echo Installing base tools
+
+echo - Updating pip
 python -m pip install --upgrade pip
+echo.
+
+
+echo - Updating setuptools and whell
 :: Work around "ModuleNotFoundError: No module named 'torch'"
 :: https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
 pip3 install --upgrade setuptools wheel
+echo.
 
-echo Installing pytorch with nvidia/CUDA packages
+
+echo - Installing pytorch with nvidia/CUDA packages
 ::pip3 install nvidia-pyindex
 ::pip3 install nvidia-cuda-runtime-cu12
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
@@ -20,36 +27,54 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 ::echo Installing xformers without dependencies
 ::pip3 install --upgrade --no-dependencies xformers
 
+
+:: https://github.com/JamesQFreeman/LoRA-ViT
+:: pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
+:: pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
+
+
+::echo - Installing general packages
+set PACKAGES=%PACKAGES% ^
+    Pillow ^
+    ftfy ^
+    immutabledict ^
+    numpy ^
+    sentencepiece ^
+    scipy
+
+
+::echo - Installing jupyter packages
+set PACKAGES=%PACKAGES% ^
+    arxiv ^
+    ipyplot ^
+    ipympl ^
+    jupyter ^
+    jupyterlab ^
+    jupyter-ai ^
+    jupyterlab-lsp ^
+    langchain-anthropic ^
+    langchain-google-genai ^
+    langchain-ollama ^
+    matplotlib ^
+    notebook ^
+    python-lsp-server
+
 ::echo Installing stable diffusion packages
-set PACKAGES=accelerate ^
+set PACKAGES=%PACKAGES% ^
+    accelerate ^
+    compel ^
     diffusers ^
     einops ^
     numpy ^
     omegaconf ^
     peft ^
     sentencepiece ^
+    starlette ^
     tiktoken ^
     transformers
 
-:: https://github.com/JamesQFreeman/LoRA-ViT
-:: pip3 install --upgrade git+https://github.com/Passiolife/minLoRAplus@main
-:: pip3 install --upgrade git+https://github.com/cccntu/minLoRA@main
 
-::echo Installing general packages
-set PACKAGES=%PACKAGES% ^
-    Pillow ^
-    ftfy ^
-    scipy
 
-::echo Installing jupyter packages
-set PACKAGES=%PACKAGES% ^
-    ipyplot ^
-    ipympl ^
-    jupyter ^
-    jupyterlab ^
-    jupyterlab-lsp ^
-    matplotlib ^
-    python-language-server
 
 ::echo Installing tensorflow packages
 ::pip3 install --upgrade ^
@@ -85,20 +110,20 @@ set PACKAGES=%PACKAGES% ^
 
 :: Manually upgrade dependencies that are known to have security issues.
 ::echo Security updates
-set PACKAGES=%PACKAGES% ^
-    IPython ^
-    Werkzeug ^
-    aiohttp ^
-    certifi ^
-    cryptography ^
-    grpcio ^
-    markdown-it-py ^
-    parso ^
-    pyls ^
-    pygments ^
-    requests ^
-    starlette ^
-    tornado ^
+::set PACKAGES=%PACKAGES% ^
+::    IPython ^
+::    Werkzeug ^
+::    aiohttp ^
+::    certifi ^
+::    cryptography ^
+::    grpcio ^
+::    markdown-it-py ^
+::    parso ^
+::    pyls ^
+::    pygments ^
+::    requests ^
+::    starlette ^
+::    tornado ^
     urllib3
 
 pip3 install --upgrade %PACKAGES%
