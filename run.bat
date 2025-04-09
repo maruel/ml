@@ -26,6 +26,13 @@ SET HF_HOME=%CD%\cache\huggingface
 SET TF_CPP_MIN_LOG_LEVEL=2
 :: https://www.tensorflow.org/guide/gpu#limiting_gpu_memory_growth
 SET TF_FORCE_GPU_ALLOW_GROWTH=true
+
+:: Override Jupyter directories to not use ~/.jupyter and ~/.local/share/jupyter
+set JUPYTER_CONFIG_DIR=config
+set JUPYTER_DATA_DIR=data
+set JUPYTER_RUNTIME_DIR=runtime
+
+
 :: --watch ?
 :: --autoreload ?
 jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir notebooks

@@ -16,4 +16,5 @@ if ollama --version | grep -q Warning; then
 	exit 1
 fi
 
+ollama pull nomic-embed-text
 ollama run huggingface.co/lmstudio-community/DeepCoder-14B-Preview-GGUF:Q4_K_M
