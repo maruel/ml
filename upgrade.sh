@@ -14,13 +14,20 @@ source venv/bin/activate
 UNAME=$(uname)
 
 
-diffusion() {
+prerequisites() {
   echo "- Installing wheel"
   # Work around "ModuleNotFoundError: No module named 'torch'"
   # https://github.com/facebookresearch/xformers/issues/740#issuecomment-1780727152
   pip3 install --upgrade wheel
   echo ""
 
+  # Work around error when installing sgmllib3k on macOS.
+  echo "- Installing setuptools"
+  pip3 install --upgrade setuptools
+  echo ""
+}
+
+diffusion() {
   echo "- Installing stable diffusion packages"
   pip3 install --upgrade \
     accelerate \
@@ -65,8 +72,11 @@ general() {
 
 jupyter() {
   echo "- Installing jupyter packages"
-  # See https://jupyter-ai.readthedocs.io/en/latest/users/index.html#model-providers
+  # See:
+  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#model-providers
+  # - https://jupyter-ai.readthedocs.io/en/latest/users/index.html#learning-arxiv-files
   pip3 install --upgrade \
+	arxiv \
     ipyplot \
     ipympl \
     jupyter \
@@ -161,12 +171,14 @@ if [ "$UNAME" = "Darwin" ]; then
   export PATH="$BREW/opt/llvm/bin:$PATH"
   export CC="$BREW/opt/llvm/bin/clang"
   export CXX="$BREW/opt/llvm/bin/clang++"
+  prerequisites
   diffusion
   general
   jupyter
   lint
   # security
 else
+  prerequisites
   diffusion
   general
   jupyter
