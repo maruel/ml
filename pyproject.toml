@@ -33,6 +33,7 @@ dependencies = [
     "matplotlib",
     "notebook",
     "python-lsp-server",
+    "python-lsp-ruff",
 
     # Stable Diffusion
     "accelerate",
