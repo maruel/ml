@@ -3,6 +3,4 @@
 /notebooks/kaggle
 /notebooks/logdir
 /notebooks/**/.ipynb_checkpoints
-/python3
-/venv*
 /.venv
