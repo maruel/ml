@@ -45,9 +45,8 @@ dependencies = [
     "transformers",
     "xformers; sys_platform == 'linux'",
 
-    # Windows extras
-    "einops; sys_platform == 'win32'",
-    "torchaudio; sys_platform == 'win32'",
+    "einops",
+    "torchaudio",
 ]
 
 [dependency-groups]
@@ -79,5 +78,5 @@ tensorflow = [
 ]
 
 [tool.uv]
-# On Windows, use the PyTorch CUDA 12.1 index for GPU support:
-#   uv sync --index pytorch=https://download.pytorch.org/whl/cu121
+# On Windows, use the PyTorch CUDA index for GPU support:
+#   uv sync --index pytorch=https://download.pytorch.org/whl/cu128
