@@ -5,5 +5,4 @@
 
 set -eu
 cd "$(dirname $0)"
-source venv/bin/activate
-tensorboard serve --logdir notebooks/logdir/ --bind_all --port 6006
+uv run tensorboard serve --logdir notebooks/logdir/ --bind_all --port 6006

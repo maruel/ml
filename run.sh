@@ -5,7 +5,6 @@
 
 set -eu
 cd "$(dirname $0)"
-source venv/bin/activate
 
 UNAME=$(uname)
 
@@ -38,4 +37,4 @@ export JUPYTER_RUNTIME_DIR=$PWD/runtime
 
 # --watch ?
 # --autoreload ?
-jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir "$PWD/notebooks"
+uv run jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir "$PWD/notebooks"

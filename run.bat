@@ -13,8 +13,6 @@ IF "%~1"=="-FIXED_CTRL_C" (
    GOTO :EOF
 )
 
-CALL venv\Scripts\activate.bat
-
 :: Not used anymore, just in case.
 :: https://gradio.app/docs/#interface
 SET GRADIO_ANALYTICS_ENABLED=0
@@ -32,7 +30,6 @@ set JUPYTER_CONFIG_DIR=config
 set JUPYTER_DATA_DIR=data
 set JUPYTER_RUNTIME_DIR=runtime
 
-
 :: --watch ?
 :: --autoreload ?
-jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir notebooks
+uv run jupyter lab -y --no-browser --ip 0.0.0.0 --notebook-dir notebooks

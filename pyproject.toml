@@ -1,0 +1,83 @@
+# Copyright 2021 Marc-Antoine Ruel. All rights reserved.
+# Use of this source code is governed under the Apache License, Version 2.0
+# that can be found in the LICENSE file.
+
+[project]
+name = "ml"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    # General
+    "Pillow",
+    "ftfy",
+    "immutabledict",
+    "numpy",
+    "sentencepiece",
+    "scipy",
+
+    # PyTorch
+    "torch",
+    "torchvision",
+
+    # Jupyter
+    "arxiv",
+    "ipyplot",
+    "ipympl",
+    "jupyter",
+    "jupyterlab",
+    "jupyter-ai",
+    "jupyterlab-lsp",
+    "langchain-anthropic",
+    "langchain-google-genai",
+    "langchain-ollama",
+    "matplotlib",
+    "notebook",
+    "python-lsp-server",
+
+    # Stable Diffusion
+    "accelerate",
+    "compel",
+    "diffusers",
+    "omegaconf",
+    "peft",
+    "starlette",
+    "tiktoken",
+    "transformers",
+    "xformers; sys_platform == 'linux'",
+
+    # Windows extras
+    "einops; sys_platform == 'win32'",
+    "torchaudio; sys_platform == 'win32'",
+]
+
+[dependency-groups]
+lint = [
+    "autopep8",
+    "mccabe",
+    "pycodestyle",
+    "pydocstyle",
+    "pyflakes",
+    "pylint",
+    "yapf",
+]
+intel = [
+    "intel-extension-for-pytorch",
+]
+cuda = [
+    "jupyterlab-nvdashboard",
+]
+tensorflow = [
+    "kaggle",
+    "pycocotools",
+    "tensorboard-plugin-profile",
+    "tensorflow",
+    "tensorflow-text",
+    "tensorflow-datasets",
+    "jax",
+    "keras",
+    "keras-nlp",
+]
+
+[tool.uv]
+# On Windows, use the PyTorch CUDA 12.1 index for GPU support:
+#   uv sync --index pytorch=https://download.pytorch.org/whl/cu121
