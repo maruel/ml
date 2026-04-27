@@ -8,17 +8,17 @@ cd "$(dirname $0)"
 
 UNAME=$(uname)
 
-GROUPS="--group lint"
+PKG_GROUPS="--group lint"
 
 if [ "$UNAME" != "Darwin" ]; then
   if lspci | grep -i intel > /dev/null 2>&1; then
-    GROUPS="$GROUPS --group intel"
+    PKG_GROUPS="$PKG_GROUPS --group intel"
   fi
   if lspci | grep -i nvidia > /dev/null 2>&1; then
-    GROUPS="$GROUPS --group cuda"
+    PKG_GROUPS="$PKG_GROUPS --group cuda"
   fi
 fi
 
 echo "Upgrading all dependencies"
 uv lock --upgrade
-uv sync $GROUPS
+uv sync $PKG_GROUPS
